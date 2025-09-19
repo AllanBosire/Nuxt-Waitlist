@@ -29,6 +29,5 @@ async function migrate() {
 }
 
 export default defineNitroPlugin(async () => {
-	if (!import.meta.dev) return;
 	await migrate();
 });
