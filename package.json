@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "nuxt-waitlist",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,23 +12,24 @@
   },
   "dependencies": {
     "@nuxt/image": "^1.8.0",
-    "@nuxt/ui": "3.0.0-alpha.10",
+    "@nuxt/ui": "4.0.0-alpha.2",
     "@nuxthub/core": "^0.7.12",
     "@stefanobartoletti/nuxt-social-share": "1.2.1",
     "@vueuse/core": "^12.4.0",
     "drizzle-orm": "^0.33.0",
     "h3-zod": "^0.5.3",
     "mini-svg-data-uri": "^1.4.4",
-    "nuxt": "^3.13.0",
+    "nuxt": "^4.1.2",
     "nuxt-security": "^2.0.0",
+    "postgres": "^3.4.7",
+    "ulid": "^3.0.1",
     "vue": "latest",
     "vue-router": "latest",
-    "zod": "^3.23.8"
+    "zod": "^4.1.9"
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.2.14",
     "drizzle-kit": "^0.24.2",
     "wrangler": "^3.76.0"
-  },
-  "packageManager": "pnpm@9.12.2"
+  }
 }

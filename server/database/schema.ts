@@ -1,9 +1,13 @@
-import {sqliteTable, text, integer, uniqueIndex} from 'drizzle-orm/sqlite-core'
+import { pgTable, text, uniqueIndex, serial, timestamp } from "drizzle-orm/pg-core";
 
-export const waitlist = sqliteTable('waitlist', {
-    id: integer('id').primaryKey({autoIncrement: true}),
-    email: text('email').notNull().unique(),
-    createdAt: integer('created_at', {mode: 'timestamp'}).notNull(),
-}, (table) => ({
-    emailIdx: uniqueIndex('email_idx').on(table.email)
-}))
+export const waitlist = pgTable(
+	"waitlist",
+	{
+		id: serial("id"),
+		email: text("email").notNull().unique(),
+		createdAt: timestamp("created_at").notNull(),
+	},
+	(table) => ({
+		emailIdx: uniqueIndex("email_idx").on(table.email),
+	})
+);

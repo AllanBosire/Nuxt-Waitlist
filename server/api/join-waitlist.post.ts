@@ -1,32 +1,39 @@
-import {useDrizzle} from "~/server/utils/drizzle";
-import {consola} from "consola";
-import {useValidatedBody, z} from "h3-zod";
+import { useDrizzle } from "~~/server/utils/drizzle";
+import { consola } from "consola";
+import { useValidatedBody, z } from "h3-zod";
 
-export default defineEventHandler(async event => {
-    consola.info("User trying to signup for waitlist...")
+export default defineEventHandler(async (event) => {
+	consola.info("User trying to signup for waitlist...");
 
-    const {email} = await useValidatedBody(event, z.object(
-        {
-            email: z.string().email().refine(async (email) => {
-                const alreadyExists = await useDrizzle().query.waitlist.findFirst({
-                    where: (waitlist, {eq}) => (eq(waitlist.email, email)),
-                })
+	const { email } = await useValidatedBody(
+		event,
+		z.object({
+			email: z
+				.string()
+				.email()
+				.refine(async (email) => {
+					const alreadyExists = await useDrizzle().query.waitlist.findFirst({
+						where: (waitlist, { eq }) => eq(waitlist.email, email),
+					});
 
-                return !alreadyExists
-            }, 'Email is already in use')
-        }
-    ))
+					return !alreadyExists;
+				}, "Email is already in use"),
+		})
+	);
 
-    consola.info("User joining waitlist...")
+	consola.info("User joining waitlist...");
 
+	const entry = await useDrizzle()
+		.insert(tables.waitlist)
+		.values({
+			email,
+			createdAt: new Date(),
+		})
+		.returning()
+		.execute()
+		.then((res) => res[0]);
 
-    const entry = await useDrizzle().insert(tables.waitlist).values({
-        email,
-        createdAt: new Date(),
-    }).returning().get()
+	consola.info(`User ${entry.email} is now on waitlist...`);
 
-
-    consola.info(`User ${entry.email} is now on waitlist...`)
-
-    return entry
-})
+	return entry;
+});
