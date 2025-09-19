@@ -11,8 +11,7 @@ const home = computed(() => route.fullPath === "/");
     <UContainer class="mx-auto flex h-16 items-center justify-between px-4 transition-all">
       <div class="flex items-center gap-5">
         <NuxtLink to="/" class="flex items-center gap-2">
-          <!-- <Logo class="h-8 w-auto" role="img" alt="Lemonrepo logo" /> -->
-          <p class="font-bold text-xl tracking-tight">Proyecto</p>
+          <p class="font-bold text-xl tracking-tight font-getar">Finueva</p>
         </NuxtLink>
       </div>
       <UButton v-if="config.waitlist.showSignups && home" to="/leaderboard" color="neutral">See Signups</UButton>
@@ -20,7 +19,7 @@ const home = computed(() => route.fullPath === "/");
     </UContainer>
     <div class="block h-[calc(100vh-4rem)] w-full sm:hidden" v-show="mobileMenu">
       <div class="flex flex-col gap-4 p-4">
-        <UButton to="/leaderboard" @click="toggleMobileMenu" color="gray">See Signups</UButton>
+        <UButton to="/leaderboard" color="neutral">See Signups</UButton>
       </div>
     </div>
   </header>

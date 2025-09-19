@@ -10,17 +10,19 @@ export type DBCredentials = {
 	username: string;
 	host: string;
 	port: number;
+	dialect: "postgresql";
 };
 
 export function getCredentials(): DBCredentials {
 	if (process.env.DATABASE_URL) {
 		const credentials = new URL(process.env.DATABASE_URL);
 		return {
-			host: credentials.host || "localhost",
+			host: credentials.host.replace(/:\d+$/, "") || "localhost",
 			password: credentials.password,
 			port: parseInt(credentials.port),
 			database: credentials.pathname.replace("/", ""),
 			username: credentials.username,
+			dialect: "postgresql",
 		};
 	}
 
@@ -33,6 +35,7 @@ export function getCredentials(): DBCredentials {
 				? parseInt(process.env.DB_PORT)
 				: process.env.DB_PORT,
 		username: process.env.DB_USER,
+		dialect: "postgresql",
 	};
 
 	const schema = z.object({
@@ -45,6 +48,7 @@ export function getCredentials(): DBCredentials {
 			.union([z.string(), z.number()], { error: "env: DB_PORT required" })
 			.check(z.refine((n) => (typeof n === "string" ? parseInt(n) : n))),
 		username: z.string({ error: "env:DB_USER required" }),
+		dialect: z._default(z.literal("postgresql"), "postgresql"),
 	});
 
 	return schema.parse(credentials) as DBCredentials;

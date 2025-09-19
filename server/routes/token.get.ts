@@ -1,0 +1,119 @@
+import { z } from "zod/v4-mini";
+import { joinURL } from "ufo";
+
+export interface LoggedInUser {
+	id: string;
+	create_at: number;
+	update_at: number;
+	delete_at: number;
+	username: string;
+	first_name: string;
+	last_name: string;
+	nickname: string;
+	email: string;
+	email_verified: boolean;
+	auth_service: string;
+	roles: string;
+	locale: string;
+	notify_props: NotifyProps;
+	props: Props;
+	last_password_update: number;
+	last_picture_update: number;
+	failed_attempts: number;
+	mfa_active: boolean;
+	timezone: Timezone;
+	terms_of_service_id: string;
+	terms_of_service_create_at: number;
+}
+
+interface NotifyProps {
+	email: string;
+	push: string;
+	desktop: string;
+	desktop_sound: string;
+	mention_keys: string;
+	channel: string;
+	first_name: string;
+	auto_responder_message: string;
+	push_threads: string;
+	comments: string;
+	desktop_threads: string;
+	email_threads: string;
+}
+
+interface Timezone {
+	useAutomaticTimezone: string;
+	manualTimezone: string;
+	automaticTimezone: string;
+}
+
+const schema = z.object({
+	it: z.string().check(z.minLength(10)),
+	email: z.email(),
+});
+
+export default defineEventHandler(async (event) => {
+	const { it, email } = await getValidatedQuery(event, schema.parse);
+	const token = await validateMagicToken(it, email);
+	if (!token) {
+		throw createError({ statusCode: 400, statusMessage: "Invalid or expired token" });
+	}
+
+	const config = useRuntimeConfig();
+	const encPswd = await useDrizzle().query.waitlist.findFirst({
+		where(token, { eq }) {
+			return eq(token.email, email);
+		},
+	});
+
+	if (!encPswd) {
+		throw createError({
+			statusCode: 404,
+			message: "User not found",
+		});
+	}
+
+	if (!encPswd.pswd) {
+		throw createError({
+			statusCode: 500,
+			message: "It seems a duck has been found",
+		});
+	}
+
+	const { data: pswd, error } = decrypt(encPswd.pswd, it);
+	if (error || !pswd) {
+		throw createError("Unable to decrypt pswd");
+	}
+
+	const response = await $fetch.raw<LoggedInUser>(
+		joinURL(config.mattermost.url, "/api/v4/users/login"),
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: {
+				login_id: email,
+				password: normalisePassword(pswd),
+			},
+		}
+	);
+
+	const mmToken = response.headers.get("Token");
+	if (!mmToken) {
+		throw createError({
+			statusCode: 500,
+			message: "Mattermost did not return a session token",
+		});
+	}
+
+	setCookie(event, "MMAUTHTOKEN", mmToken, {
+		httpOnly: true,
+		secure: true,
+		sameSite: "lax",
+		path: "/",
+		domain: new URL(config.mattermost.url).hostname,
+	});
+
+	return sendRedirect(event, config.public.mmUrl || config.public.appUrl || "/");
+});

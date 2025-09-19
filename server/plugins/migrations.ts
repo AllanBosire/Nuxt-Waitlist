@@ -1,23 +1,34 @@
 import { consola } from "consola";
-import { useDrizzle } from "@@/server/utils/drizzle";
 
-async function migrate(database: ReturnType<typeof useDrizzle>) {
+async function exec(command: string) {
+	consola.info(`Executing: ${command}`);
 	const { exec } = await import("child_process");
-	const { promisify } = await import("util");
-	const execAsync = promisify(exec);
-	await execAsync("pnpm drizzle-kit generate");
-	await execAsync("pnpm drizzle-kit migrate");
-	return database;
+	const child = exec(command);
+	child.stdout?.pipe(process.stdout);
+	child.stderr?.pipe(process.stderr);
+	return new Promise<void>((resolve, reject) => {
+		child.on("exit", (code) => {
+			if (code === 0) {
+				resolve();
+			} else {
+				reject(new Error(`Command failed with exit code ${code}`));
+			}
+		});
+	});
+}
+
+async function migrate() {
+	try {
+		await exec("pnpm drizzle-kit generate");
+		await exec("pnpm drizzle-kit migrate");
+		consola.success("Database migrations done");
+	} catch (err) {
+		consola.error("Migration error", err);
+		throw err;
+	}
 }
 
 export default defineNitroPlugin(async () => {
 	if (!import.meta.dev) return;
-
-	await migrate(useDrizzle())
-		.then(() => {
-			consola.success("Database migrations done");
-		})
-		.catch((err) => {
-			consola.error("Database migrations failed", err);
-		});
+	await migrate();
 });

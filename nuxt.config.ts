@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-	compatibilityDate: "2024-04-03",
+	compatibilityDate: "2025-09-19",
 	devtools: { enabled: true },
 	css: ["~/assets/css/main.css"],
 	modules: [
@@ -10,9 +10,6 @@ export default defineNuxtConfig({
 		"@nuxt/image",
 		"@stefanobartoletti/nuxt-social-share",
 	],
-	socialShare: {
-		baseUrl: "https://www.yoursite.com",
-	},
 	security: {
 		headers: {
 			contentSecurityPolicy: {
@@ -20,9 +17,8 @@ export default defineNuxtConfig({
 			},
 		},
 	},
-	ui: {},
-	colorMode: {
-		preference: "light",
+	ui: {
+		colorMode: false,
 	},
 	routeRules: {
 		"/api/join-waitlist": {
@@ -34,4 +30,30 @@ export default defineNuxtConfig({
 		},
 	},
 	extends: ["github:kgarchie/nuxt-starter#9"],
+	app: {
+		head: {
+			link: [{ rel: "icon", type: "image/svg+xml", href: "/finueva.svg" }],
+		},
+	},
+	runtimeConfig: {
+		public: {
+			socialShare: {
+				baseUrl: "http://localhost:3000",
+			},
+			appUrl: "http://localhost:3000",
+			mmUrl: "https://chat.ifkafin.com",
+		},
+		mattermost: {
+			url: "https://chat.ifkafin.com",
+			token: "",
+			/** The default team to add the user to */
+			team_id: "",
+		},
+		nodemailer: {
+			email: "",
+			password: "",
+			host: "",
+			port: 587,
+		},
+	},
 });
