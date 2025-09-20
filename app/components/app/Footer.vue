@@ -13,7 +13,7 @@ const config = useAppConfig();
       </div>
       <div class="mt-8 md:order-1 md:mt-0">
         <p class="text-center text-xs leading-5 text-gray-500 inline-flex gap-2 items-center">
-          <Icon name="tabler:copyright" /> Finueva 2024
+          <Icon name="tabler:copyright" /> Finueva {{ new Date().getFullYear() }}
         </p>
       </div>
     </div>

@@ -54,35 +54,30 @@ const schema = z.object({
 
 export default defineEventHandler(async (event) => {
 	const { it, email } = await getValidatedQuery(event, schema.parse);
-	const token = await validateMagicToken(it, email);
-	if (!token) {
-		throw createError({ statusCode: 400, statusMessage: "Invalid or expired token" });
+	const user = await getUserByEmail(email);
+
+	const pswd = (key: string, pswd: string) => {
+		const { data, error } = decrypt(pswd, key);
+		if (error) {
+			throw error;
+		}
+
+		if (!data) {
+			throw createError("Unable to decrypt password");
+		}
+
+		return normalisePassword(data);
+	};
+	if (!user) {
+		throw createError({ statusCode: 404, statusMessage: "No such user found" });
 	}
 
 	const config = useRuntimeConfig();
-	const encPswd = await useDrizzle().query.waitlist.findFirst({
-		where(token, { eq }) {
-			return eq(token.email, email);
-		},
-	});
-
-	if (!encPswd) {
-		throw createError({
-			statusCode: 404,
-			message: "User not found",
-		});
-	}
-
-	if (!encPswd.pswd) {
+	if (!user.pswd) {
 		throw createError({
 			statusCode: 500,
 			message: "It seems a duck has been found",
 		});
-	}
-
-	const { data: pswd, error } = decrypt(encPswd.pswd, it);
-	if (error || !pswd) {
-		throw createError("Unable to decrypt pswd");
 	}
 
 	const response = await $fetch.raw<LoggedInUser>(
@@ -94,7 +89,7 @@ export default defineEventHandler(async (event) => {
 			},
 			body: {
 				login_id: email,
-				password: normalisePassword(pswd),
+				password: pswd(it, user.pswd),
 			},
 		}
 	);
@@ -107,12 +102,14 @@ export default defineEventHandler(async (event) => {
 		});
 	}
 
+	const hostname = new URL(config.mattermost.url).hostname;
+
 	setCookie(event, "MMAUTHTOKEN", mmToken, {
 		httpOnly: true,
 		secure: true,
-		sameSite: "lax",
+		sameSite: "none",
 		path: "/",
-		domain: new URL(config.mattermost.url).hostname,
+		domain: `.${hostname.split(".").slice(-2).join(".")}`,
 	});
 
 	return sendRedirect(event, config.public.mmUrl || config.public.appUrl || "/");

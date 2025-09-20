@@ -241,7 +241,7 @@ const joinWaitlist = async () => {
 			Already signed up?
 			<NuxtLink
 				to="/leaderboard"
-				class="cursor-pointer transition-color font-semibold leading-6 text-primary-400 hover:text-primary-300"
+				class="cursor-pointer transition-color font-semibold leading-6 text-purple hover:text-purple/90"
 			>
 				Check your spot on the waiting list.
 			</NuxtLink>

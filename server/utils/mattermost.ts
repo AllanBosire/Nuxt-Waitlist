@@ -63,42 +63,20 @@ export function addUserToTeam(userId: string, teamId: string) {
 	});
 }
 
-async function createMagicToken(email: string) {
-	const result = await useDrizzle()
-		.insert(tables.token)
-		.values({
-			value: v7(),
-			expired: false,
-			email,
-		})
-		.returning()
-		.execute();
-	return result.at(0);
-}
-
 export function createMagicLink(token: string, email: string) {
 	const config = useRuntimeConfig();
 	return joinURL(config.public.appUrl, `/token?it=${token}&email=${email}`);
 }
 
-export function validateMagicToken(it: string, email: string) {
-	return useDrizzle().query.token.findFirst({
-		where: (token, { eq, and }) =>
-			and(eq(token.value, it), eq(token.email, email), eq(token.expired, false)),
+export function getUserByEmail(email: string) {
+	return useDrizzle().query.waitlist.findFirst({
+		where: (user, { eq }) => eq(user.email, email),
 	});
 }
 
 export async function createMattermostUser(_user: { username: string; email: string }) {
 	const config = useRuntimeConfig();
-	const token = await createMagicToken(_user.email).catch((e) => {
-		consola.fatal("Unable to create magic token", e.message);
-		consola.error(e);
-		throw e;
-	});
-	if (!token) {
-		throw createError("Unable to create magic token");
-	}
-
+	const token = v7();
 	const rawPswd = v4();
 	const user = await $fetch<MattermostUserCreateResponse>(
 		joinURL(config.mattermost.url, "/api/v4/users"),
@@ -123,7 +101,7 @@ export async function createMattermostUser(_user: { username: string; email: str
 		return undefined;
 	}
 
-	const { data: pswd, error } = encrypt(rawPswd, token.value);
+	const { data: pswd, error } = encrypt(rawPswd, token);
 	if (error || !pswd) {
 		throw createError({
 			message: "Encountered an error while attempting encryption",
@@ -148,7 +126,7 @@ export async function createMattermostUser(_user: { username: string; email: str
 		consola.fatal("Could not add mattermost user to finueva team");
 	});
 
-	const link = createMagicLink(token.value, user.email);
+	const link = createMagicLink(token, user.email);
 	return {
 		user,
 		link,

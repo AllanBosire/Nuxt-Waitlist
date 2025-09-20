@@ -21,13 +21,3 @@ export const waitlist = pgTable(
 		emailIdx: uniqueIndex("email_idx").on(table.email),
 	})
 );
-
-export const token = pgTable("tokens", {
-	id: serial("id"),
-	value: text("value").notNull(),
-	email: varchar("user_email", { length: 255 })
-		.references(() => waitlist.email)
-		.notNull(),
-	expired: boolean("expired").notNull().default(false),
-	createdAt: timestamp("created_at").defaultNow(),
-});
