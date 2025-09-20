@@ -19,6 +19,7 @@ async function exec(command: string) {
 
 async function migrate() {
 	try {
+		await exec("corepack enable");
 		await exec("pnpm drizzle-kit generate");
 		await exec("pnpm drizzle-kit migrate");
 		consola.success("Database migrations done");
@@ -29,5 +30,6 @@ async function migrate() {
 }
 
 export default defineNitroPlugin(async () => {
+	if (!import.meta.dev) return;
 	await migrate();
 });

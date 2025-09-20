@@ -1,58 +1,7 @@
-import "dotenv/config";
 import { drizzle } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
 import postgres from "postgres";
-import { z } from "zod/v4-mini";
-
-export type DBCredentials = {
-	database: string;
-	password: string;
-	username: string;
-	host: string;
-	port: number;
-	dialect: "postgresql";
-};
-
-export function getCredentials(): DBCredentials {
-	if (process.env.DATABASE_URL) {
-		const credentials = new URL(process.env.DATABASE_URL);
-		return {
-			host: credentials.host.replace(/:\d+$/, "") || "localhost",
-			password: credentials.password,
-			port: parseInt(credentials.port),
-			database: credentials.pathname.replace("/", ""),
-			username: credentials.username,
-			dialect: "postgresql",
-		};
-	}
-
-	const credentials: Partial<DBCredentials> = {
-		database: process.env.DB_NAME,
-		host: process.env.DB_HOST,
-		password: process.env.DB_PASSWORD,
-		port:
-			typeof process.env.DB_PORT === "string"
-				? parseInt(process.env.DB_PORT)
-				: process.env.DB_PORT,
-		username: process.env.DB_USER,
-		dialect: "postgresql",
-	};
-
-	const schema = z.object({
-		database: z.string({
-			error: "env: DB_NAME required",
-		}),
-		host: z.string({ error: "env: DB_HOST required" }),
-		password: z.string({ error: "env: DB_PASSWORD required" }),
-		port: z
-			.union([z.string(), z.number()], { error: "env: DB_PORT required" })
-			.check(z.refine((n) => (typeof n === "string" ? parseInt(n) : n))),
-		username: z.string({ error: "env:DB_USER required" }),
-		dialect: z._default(z.literal("postgresql"), "postgresql"),
-	});
-
-	return schema.parse(credentials) as DBCredentials;
-}
+import { getCredentials } from "@@/drizzle.config";
 
 const connection = postgres(getCredentials());
 const db = drizzle(connection, {

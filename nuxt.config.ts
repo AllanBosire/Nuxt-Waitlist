@@ -1,4 +1,4 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
 	compatibilityDate: "2025-09-19",
 	devtools: { enabled: true },
@@ -54,6 +54,12 @@ export default defineNuxtConfig({
 			password: "",
 			host: "",
 			port: 587,
+		},
+	},
+	vite: {
+		plugins: [tailwindcss()],
+		build: {
+			sourcemap: false,
 		},
 	},
 });

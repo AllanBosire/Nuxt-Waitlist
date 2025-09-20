@@ -1,0 +1,35 @@
+services:
+    web:
+        build:
+            context: .
+        env_file:
+            - ".env"
+        environment:
+            - DB_NAME=${DB_NAME:-master}
+            - DB_PASSWORD=${DB_PASSWORD:-__default}
+            - DB_USER=postgres
+            - DB_HOST=db
+            - DB_PORT=5432
+        ports:
+            - "${PORT:-80}:${PORT:-3000}"
+        depends_on:
+            db:
+                condition: service_healthy
+
+    db:
+        image: postgres:latest
+        environment:
+            - POSTGRES_DB=${DB_NAME:-master}
+            - POSTGRES_PASSWORD=${DB_PASSWORD:-__default}
+            - POSTGRES_USER=${DB_USER:-postgres}
+            - PGDATA=/data/pgdata
+        volumes:
+            - postgres_data:/data/pgdata
+        healthcheck:
+            interval: 5s
+            timeout: 10s
+            retries: 10
+            test: pg_isready -h localhost -U $$POSTGRES_USER
+
+volumes:
+    postgres_data:
