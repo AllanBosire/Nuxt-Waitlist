@@ -45,7 +45,7 @@ export function sendMagicLink(data: {
 				</p>
 				<p>
 					<a href="${data.link}" style="display: inline-block; padding: 10px 20px; background: #007bff; color: #fff; border-radius: 4px; text-decoration: none;">
-						Login with Magic Link
+						Login Link
 					</a>
 				</p>
 				<p style="font-size: 14px; color: #888;">
