@@ -15,6 +15,13 @@
       "when": 1758889894857,
       "tag": "0001_strange_bruce_banner",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759057204310,
+      "tag": "0002_salty_jane_foster",
+      "breakpoints": true
     }
   ]
 }

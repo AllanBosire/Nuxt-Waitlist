@@ -1,0 +1,1 @@
+ALTER TABLE "waitlist" RENAME COLUMN "welcome_bot_messages" TO "sent_bot_messages";

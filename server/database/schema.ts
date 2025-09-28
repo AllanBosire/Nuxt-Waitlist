@@ -27,7 +27,7 @@ export const waitlist = pgTable(
 		createdAt: timestamp("created_at").defaultNow(),
 		referrer: varchar("referrer", { length: 255 }),
 		pswd: text("pswd"),
-		sent_bot_messages: jsonb("welcome_bot_messages").$type<SBM>(),
+		sent_bot_messages: jsonb("sent_bot_messages").$type<SBM>(),
 	},
 	(table) => ({
 		emailIdx: uniqueIndex("email_idx").on(table.email),

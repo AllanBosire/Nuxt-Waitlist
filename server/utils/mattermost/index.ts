@@ -2,6 +2,7 @@ import { joinURL } from "ufo";
 import { consola } from "consola";
 import { v7, v4 } from "uuid";
 import { eq } from "drizzle-orm";
+import { sendWelcomeMessage } from "../messages/welcome";
 
 export interface MattermostUserCreateResponse {
 	id: string;
@@ -99,14 +100,36 @@ export interface Timezone {
 
 export function getMatterMostUserbyId(id: string) {
 	const config = useRuntimeConfig();
-	return $fetch<MMUser>(joinURL(config.mattermost.url, "/api/v4/users/ids"), {
+	return $fetch<MMUser[]>(joinURL(config.mattermost.url, "/api/v4/users/ids"), {
 		method: "POST",
 		headers: {
 			Authorization: `Bearer ${config.mattermost.token}`,
 			"Content-Type": "application/json",
 		},
 		body: [id],
-	}).catch((e) => {
+	})
+		.then((data) => {
+			return data?.[0];
+		})
+		.catch((e) => {
+			consola.fatal(e);
+			return undefined;
+		});
+}
+
+export function getMatterMostUserByEmail(email: string) {
+	const config = useRuntimeConfig();
+
+	return $fetch<MMUser>(
+		joinURL(config.mattermost.url, `/api/v4/users/email/${encodeURIComponent(email)}`),
+		{
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${config.mattermost.token}`,
+				"Content-Type": "application/json",
+			},
+		}
+	).catch((e) => {
 		consola.fatal(e);
 		return undefined;
 	});
@@ -188,6 +211,7 @@ export async function createMattermostUser(_user: { username: string; email: str
 	});
 
 	const link = createMagicLink(token, user.email);
+	sendWelcomeMessage(user.id, config.mattermost.bots.welcome.version);
 	return {
 		user,
 		link,

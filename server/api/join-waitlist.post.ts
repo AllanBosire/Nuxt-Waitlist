@@ -41,7 +41,7 @@ export default defineEventHandler(async (event) => {
 				throw createError("Unable to create mattermost user");
 			}
 
-			sendMagicLink({
+			sendWelcomeEmail({
 				link: result.link,
 				email: result.user.email,
 				username: result.user.username,

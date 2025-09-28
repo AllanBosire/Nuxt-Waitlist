@@ -1,4 +1,6 @@
 import tailwindcss from "@tailwindcss/vite";
+import vue from "@vitejs/plugin-vue";
+
 export default defineNuxtConfig({
 	compatibilityDate: "2025-09-19",
 	devtools: { enabled: true },
@@ -67,5 +69,16 @@ export default defineNuxtConfig({
 		build: {
 			sourcemap: false,
 		},
+	},
+	nitro: {
+		rollupConfig: {
+			plugins: [vue()],
+		},
+		serverAssets: [
+			{
+				baseName: "markdown",
+				dir: "./server/templates/markdown",
+			},
+		],
 	},
 });
