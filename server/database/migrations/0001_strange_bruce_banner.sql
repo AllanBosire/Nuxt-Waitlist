@@ -1,0 +1,1 @@
+ALTER TABLE "waitlist" ADD COLUMN "welcome_bot_messages" jsonb;

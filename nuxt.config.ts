@@ -29,7 +29,7 @@ export default defineNuxtConfig({
 			},
 		},
 	},
-	extends: ["github:kgarchie/nuxt-starter#9"],
+	extends: ["github:kgarchie/nuxt-starter"],
 	app: {
 		head: {
 			link: [{ rel: "icon", type: "image/svg+xml", href: "/finueva.svg" }],
@@ -48,6 +48,12 @@ export default defineNuxtConfig({
 			token: "",
 			/** The default team to add the user to */
 			team_id: "",
+			bots: {
+				welcome: {
+					version: 1,
+					token: "",
+				},
+			},
 		},
 		nodemailer: {
 			email: "",

@@ -17,8 +17,11 @@ async function checkUsername(term: string) {
 			},
 		}
 	).catch((e) => {
-		consola.warn(e);
-		return undefined;
+		if (e?.response?.status === 404) {
+			return undefined;
+		}
+
+		consola.fatal(e);
 	});
 
 	if (!results) {

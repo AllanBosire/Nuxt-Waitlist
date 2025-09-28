@@ -51,6 +51,67 @@ export interface Timezone {
 	automaticTimezone: string;
 }
 
+export interface MMUser {
+	id: string;
+	create_at: number;
+	update_at: number;
+	delete_at: number;
+	username: string;
+	first_name: string;
+	last_name: string;
+	nickname: string;
+	email: string;
+	email_verified: boolean;
+	auth_service: string;
+	roles: string;
+	locale: string;
+	notify_props: NotifyProps;
+	props: Props;
+	last_password_update: number;
+	last_picture_update: number;
+	failed_attempts: number;
+	mfa_active: boolean;
+	timezone: Timezone;
+	terms_of_service_id: string;
+	terms_of_service_create_at: number;
+}
+
+export interface NotifyProps {
+	email: string;
+	push: string;
+	desktop: string;
+	desktop_sound: string;
+	mention_keys: string;
+	channel: string;
+	first_name: string;
+	auto_responder_message: string;
+	push_threads: string;
+	comments: string;
+	desktop_threads: string;
+	email_threads: string;
+}
+
+export interface Timezone {
+	useAutomaticTimezone: string;
+	manualTimezone: string;
+	automaticTimezone: string;
+}
+
+export function getMatterMostUserbyId(id: string) {
+	const config = useRuntimeConfig();
+	return $fetch<MMUser>(joinURL(config.mattermost.url, "/api/v4/users/ids"), {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${config.mattermost.token}`,
+			"Content-Type": "application/json",
+		},
+		body: [id],
+	}).catch((e) => {
+		consola.fatal(e);
+		return undefined;
+	});
+}
+
 export function addUserToTeam(userId: string, teamId: string) {
 	const config = useRuntimeConfig();
 	return $fetch(joinURL(config.mattermost.url, `/api/v4/teams/${teamId}/members`), {
@@ -118,7 +179,7 @@ export async function createMattermostUser(_user: { username: string; email: str
 		.execute()
 		.catch((e) => {
 			consola.error(e);
-			consola.fatal("Could not set db password", e.message);
+			consola.fatal("Could not set db password", e.message, pswd);
 		});
 
 	addUserToTeam(user.id, config.mattermost.team_id).catch((e) => {
