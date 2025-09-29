@@ -10,11 +10,15 @@ services:
             - DB_USER=postgres
             - DB_HOST=db
             - DB_PORT=5432
+            - PUID=${PUID:-1000}
+            - PGID=${PGID:-1000}
         ports:
             - "${PORT:-80}:${PORT:-3000}"
         depends_on:
             db:
                 condition: service_healthy
+        volumes:
+          - videos:/uploads/videos
 
     db:
         image: postgres:latest
@@ -31,5 +35,22 @@ services:
             retries: 10
             test: pg_isready -h localhost -U $$POSTGRES_USER
 
+    jellyfin:
+        image: jellyfin/jellyfin:${JELLYFIN_VERSION:-latest}
+        container_name: jellyfin
+        environment:
+            - PUID=${PUID:-1000}
+            - PGID=${PGID:-1000}
+            - TZ=${TZ:-Etc/UTC}
+            - UMASK_SET=002
+        volumes:
+            - jellyfin_config:/config
+            - videos:/media
+        ports:
+            - "${JELLYFIN_PORT:-8098}:8096"
+        restart: unless-stopped
+
 volumes:
     postgres_data:
+    videos:
+    jellyfin_config:

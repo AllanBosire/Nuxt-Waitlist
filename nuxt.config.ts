@@ -58,7 +58,11 @@ export default defineNuxtConfig({
 				},
 			},
 			/** comma separated admin emails */
-			admins: ""
+			admins: "",
+		},
+		jellyfin: {
+			apiKey: "",
+			url: "",
 		},
 		nodemailer: {
 			email: "",
