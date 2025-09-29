@@ -11,6 +11,7 @@ export default defineNuxtConfig({
 		"@nuxt/fonts",
 		"@nuxt/image",
 		"@stefanobartoletti/nuxt-social-share",
+		"nuxt-cloudflare-analytics",
 	],
 	security: {
 		headers: {
@@ -77,8 +78,11 @@ export default defineNuxtConfig({
 		serverAssets: [
 			{
 				baseName: "markdown",
-				dir: "./server/templates/markdown",
+				dir: "./templates/markdown",
 			},
 		],
+	},
+	cloudflareAnalytics: {
+		token: "",
 	},
 });

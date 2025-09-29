@@ -2,52 +2,48 @@ import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkMDC from "remark-mdc";
 import remarkRehype from "remark-rehype";
-// @ts-ignore
-import remarkVariables from "remark-variables";
 import rehypeStringify from "rehype-stringify";
-import remarkStringify from "remark-stringify";
 import matter from "gray-matter";
+import Mustache from "mustache";
 
-export async function toMarkdown(md: string, variables: Record<string, any>) {
+async function toMarkdown<K extends keyof Markdown>(md: string, variables: Markdown[K]) {
 	const { content, data: frontmatter } = matter(md);
+	const renderedContent = Mustache.render(content, variables);
+	const renderedFrontmatter = JSON.parse(Mustache.render(JSON.stringify(frontmatter), variables));
 
-	const processor = unified().use(remarkParse).use(remarkVariables).use(remarkStringify);
-
-	for (const [key, val] of entries(variables)) {
-		processor.data(key as any, val);
-	}
-
-	const file = await processor.process(content);
 	return {
-		markdown: String(file),
-		frontmatter,
+		markdown: renderedContent,
+		frontmatter: renderedFrontmatter,
 	};
 }
 
-export async function toHtml(md: string, variables: Record<string, any> | undefined) {
+export async function toHtml(md: string, _frontmatter?: Record<string, any>) {
 	const { content, data: frontmatter } = matter(md);
 
 	const processor = unified()
 		.use(remarkParse)
 		.use(remarkMDC)
 		.use(remarkRehype)
-		.use(rehypeStringify)
-		.use(remarkVariables);
-
-	for (const [key, val] of entries(variables)) {
-		processor.data(key as any, val);
-	}
+		.use(rehypeStringify);
 
 	const file = await processor.process(content);
 
 	return {
 		html: String(file),
-		frontmatter,
+		frontmatter: _frontmatter ? Object.assign(_frontmatter, frontmatter) : frontmatter,
 	};
 }
 
-export function getMarkdown(name: string) {
-	return useStorage("assets:markdown").getItem<string>(`${name}.md`);
+export async function getMarkdown<K extends keyof Markdown>(
+	name: K,
+	variables: Markdown[K] | undefined
+) {
+	const md = await useStorage("assets:markdown").getItem<string>(`${name}.md`);
+	if (!md) {
+		throw createError("Could not find markdown: " + name);
+	}
+
+	return toMarkdown(md, variables ? variables : ({} as any));
 }
 
 export interface Markdown {
@@ -61,10 +57,6 @@ export interface Markdown {
  * @throws when the markdown file isn't found
  */
 export async function getHtml<K extends keyof Markdown>(name: K, variables: Markdown[K]) {
-	const md = await getMarkdown(name);
-	if (!md) {
-		throw createError("Could not find markdown");
-	}
-
-	return toHtml(md, variables);
+	const { markdown, frontmatter } = await getMarkdown(name, variables);
+	return toHtml(markdown, frontmatter);
 }

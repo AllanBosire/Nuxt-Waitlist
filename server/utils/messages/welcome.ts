@@ -1,8 +1,7 @@
 import { consola } from "consola";
-import { toMarkdown } from "../markdown";
 
 export function getWelcomeBotMessage(user: MMUser) {
-	return toMarkdown("welcome", {
+	return getMarkdown("welcome", {
 		username: user.username,
 	});
 }
