@@ -57,6 +57,8 @@ export default defineNuxtConfig({
 					token: "",
 				},
 			},
+			/** comma separated admin emails */
+			admins: ""
 		},
 		nodemailer: {
 			email: "",
@@ -83,6 +85,6 @@ export default defineNuxtConfig({
 		],
 	},
 	cloudflareAnalytics: {
-		token: "",
+		token: "5adfd9b5da244f2abb81af73f33b6b2f",
 	},
 });

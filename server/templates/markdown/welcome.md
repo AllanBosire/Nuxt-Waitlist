@@ -2,8 +2,6 @@ Hey @{{username}}, welcome to Finueva Community! 🎉
 
 I'm here to help you get started.
 
-# **Finueva Early Adopters Hub**
-
 We’re **thrilled** to have you here!
 You’re part of the **first wave** shaping the future of investing —
 a future where **strategies, tools, and insights** are **democratized**, **simplified**, and **put directly into your hands**.

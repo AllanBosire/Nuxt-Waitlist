@@ -109,7 +109,7 @@ export default defineEventHandler(async (event) => {
 		secure: true,
 		sameSite: "none",
 		path: "/",
-		domain: `.${hostname.split(".").slice(-2).join(".")}`,
+		domain: `${hostname.split(".").slice(-2).join(".")}`,
 	});
 
 	return sendRedirect(event, config.public.mmUrl || config.public.appUrl || "/");

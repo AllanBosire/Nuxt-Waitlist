@@ -6,7 +6,7 @@ import rehypeStringify from "rehype-stringify";
 import matter from "gray-matter";
 import Mustache from "mustache";
 
-async function toMarkdown<K extends keyof Markdown>(md: string, variables: Markdown[K]) {
+function toMarkdown<K extends keyof Markdown>(md: string, variables: Markdown[K]) {
 	const { content, data: frontmatter } = matter(md);
 	const renderedContent = Mustache.render(content, variables);
 	const renderedFrontmatter = JSON.parse(Mustache.render(JSON.stringify(frontmatter), variables));
@@ -17,17 +17,15 @@ async function toMarkdown<K extends keyof Markdown>(md: string, variables: Markd
 	};
 }
 
-export async function toHtml(md: string, _frontmatter?: Record<string, any>) {
-	const { content, data: frontmatter } = matter(md);
-
+export async function toHtml<K extends keyof Markdown>(md: string, _frontmatter?: Markdown[K]) {
+	const { markdown, frontmatter } = toMarkdown(md, _frontmatter ? _frontmatter : ({} as any));
 	const processor = unified()
 		.use(remarkParse)
 		.use(remarkMDC)
 		.use(remarkRehype)
 		.use(rehypeStringify);
 
-	const file = await processor.process(content);
-
+	const file = await processor.process(markdown);
 	return {
 		html: String(file),
 		frontmatter: _frontmatter ? Object.assign(_frontmatter, frontmatter) : frontmatter,
