@@ -8,7 +8,8 @@ useHead({
 
 <template>
 	<UApp>
-		<div class="flex flex-col justify-between px-8 lg:px-0 h-screen relative overflow-hidden">
+		<NuxtLoadingIndicator />
+		<div class="flex flex-col justify-between px-8 lg:px-0 min-h-screen relative">
 			<AppNavbar />
 			<NuxtPage />
 			<AppFooter />

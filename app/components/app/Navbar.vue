@@ -4,6 +4,12 @@ const config = useAppConfig();
 
 const route = useRoute();
 const home = computed(() => route.fullPath === "/");
+
+const { data: me } = useMe();
+
+function logout() {
+
+}
 </script>
 
 <template>
@@ -15,16 +21,18 @@ const home = computed(() => route.fullPath === "/");
 					<p class="font-bold text-xl font-getar tracking-wide">finueva</p>
 				</NuxtLink>
 			</div>
-			<UButton v-if="config.waitlist.showSignups && home" to="/leaderboard" color="neutral"
-				>See Signups</UButton
-			>
-			<UButton v-else-if="!home" to="/" color="primary">Sign Up</UButton>
-		</UContainer>
-		<div class="block h-[calc(100vh-4rem)] w-full sm:hidden" v-show="mobileMenu">
-			<div class="flex flex-col gap-4 p-4">
-				<UButton to="/leaderboard" color="neutral" class="font-outfit">See Signups</UButton>
+			<div class="gap-2 flex">
+				<UButton
+					v-if="config.waitlist.showSignups && home"
+					to="/leaderboard"
+					color="neutral"
+				>
+					See Signups
+				</UButton>
+				<UButton v-if="me" color="warning" @click="logout">Log Out</UButton>
+				<UButton v-else-if="!home" to="/" color="primary">Sign Up</UButton>
 			</div>
-		</div>
+		</UContainer>
 	</header>
 </template>
 

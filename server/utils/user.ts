@@ -22,7 +22,7 @@ export async function deleteUser(email: string) {
 const getMMUserFromCookie = defineCachedFunction(
 	(cookie: string) => {
 		const config = useRuntimeConfig();
-		return $fetch<MMUser>(joinURL(config.mattermost.url, "/api/v4/users/me"), {
+		return $fetch<MMUser | undefined>(joinURL(config.mattermost.url, "/api/v4/users/me"), {
 			headers: {
 				Authorization: `Bearer ${cookie}`,
 			},
@@ -33,6 +33,17 @@ const getMMUserFromCookie = defineCachedFunction(
 	}
 );
 
+export function isAdmin(user: { email: string }) {
+	const config = useRuntimeConfig();
+
+	const admins = config.mattermost.admins.split(",");
+	if (!admins.includes(user.email)) {
+		return false;
+	}
+
+	return true;
+}
+
 /**
  * @throws When user is not admin
  */
@@ -40,15 +51,19 @@ export async function ensureAdmin(event: H3Event) {
 	const cookie = getCookie(event, "MMAUTHTOKEN");
 	if (!cookie) {
 		throw createError({
-			statusCode: 404,
+			status: 404,
+			message: "No MMAUTHTOKEN cookie",
 		});
 	}
 
 	const user = await getMMUserFromCookie(cookie);
-	const config = useRuntimeConfig();
+	if (!user) {
+		throw createError({
+			statusCode: 404,
+		});
+	}
 
-	const admins = config.mattermost.admins.split(",");
-	if (!admins.includes(user.email)) {
+	if (!isAdmin(user)) {
 		throw createError({ statusCode: 401 });
 	}
 }

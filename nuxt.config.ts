@@ -11,7 +11,7 @@ export default defineNuxtConfig({
 		"@nuxt/fonts",
 		"@nuxt/image",
 		"@stefanobartoletti/nuxt-social-share",
-		"nuxt-cloudflare-analytics",
+		"nuxt-echarts",
 	],
 	security: {
 		headers: {
@@ -88,7 +88,18 @@ export default defineNuxtConfig({
 			},
 		],
 	},
-	cloudflareAnalytics: {
-		token: "5adfd9b5da244f2abb81af73f33b6b2f",
+	echarts: {
+		components: [
+			"LegendComponent",
+			"GridComponent",
+			"DataZoomComponent",
+			"MarkLineComponent",
+			"MarkPointComponent",
+			"TooltipComponent",
+			"TitleComponent",
+			"GraphicComponent",
+			"PolarComponent",
+		],
+		charts: ["LineChart", "BarChart", "PieChart"],
 	},
 });

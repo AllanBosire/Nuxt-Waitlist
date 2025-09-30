@@ -25,8 +25,6 @@ This server is your **community space** to:
 
 To keep this community **productive and enjoyable**, please follow these rules:
 
-To keep this community **productive and enjoyable**, please follow these rules:
-
 1. **Respect first**  
    Treat every member with courtesy and kindness. No harassment, discrimination, hate speech, or toxic behavior will be tolerated. Disagreements are natural, but always remain civil and constructive.
 

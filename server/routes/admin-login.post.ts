@@ -4,24 +4,37 @@ import { joinURL } from "ufo";
 import type { LoggedInUser } from "./token.get";
 
 const schema = z.object({
-	login_id: z.string().check(z.minLength(3)),
+	username: z.string().check(z.minLength(3)),
 	password: z.string(),
 });
 export default defineEventHandler(async (event) => {
-	const { login_id, password } = await readValidatedBody(event, schema.parse);
-	consola.info(login_id, "is attempting to login as admin");
+	const { username, password } = await readValidatedBody(event, schema.parse);
+	consola.info(username, "is attempting to login as admin");
 	const config = useRuntimeConfig();
 
-	const response = await $fetch.raw<LoggedInUser>(
-		joinURL(config.mattermost.url, "/api/v4/users/login"),
-		{
+	const response = await $fetch
+		.raw<LoggedInUser>(joinURL(config.mattermost.url, "/api/v4/users/login"), {
 			method: "POST",
 			body: {
-				login_id,
+				login_id: username,
 				password,
 			},
-		}
-	);
+		})
+		.catch((e) => {
+			consola.fatal(e);
+			return undefined;
+		});
+
+	if (!response) {
+		throw createError({
+			message: "Invalid User or Password",
+			status: 401,
+			data: {
+				username,
+				password,
+			},
+		});
+	}
 
 	if (!response.ok) {
 		throw createError({
@@ -37,12 +50,12 @@ export default defineEventHandler(async (event) => {
 		});
 	}
 
-	const hostname = new URL(config.mattermost.url).hostname;
+	const hostname = import.meta.dev ? undefined : new URL(config.mattermost.url).hostname;
 	setCookie(event, "MMAUTHTOKEN", mmToken, {
 		httpOnly: true,
 		secure: true,
 		sameSite: "none",
 		path: "/",
-		domain: `${hostname.split(".").slice(-2).join(".")}`,
+		domain: hostname ? `${hostname.split(".").slice(-2).join(".")}` : undefined,
 	});
 });

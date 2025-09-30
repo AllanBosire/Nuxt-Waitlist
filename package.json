@@ -27,7 +27,7 @@
     "mustache": "^4.2.0",
     "nodemailer": "^7.0.6",
     "nuxt": "^4.1.2",
-    "nuxt-cloudflare-analytics": "^1.0.8",
+    "nuxt-echarts": "^1.0.0",
     "nuxt-security": "^2.4.0",
     "postgres": "^3.4.7",
     "rehype-stringify": "^10.0.1",
