@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX IF NOT EXISTS "session_id_idx" ON "analytics" USING btree ("session_id");--> statement-breakpoint
+ALTER TABLE "analytics" ADD CONSTRAINT "analytics_session_id_unique" UNIQUE("session_id");

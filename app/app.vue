@@ -1,9 +1,8 @@
 <script setup lang="ts">
-// useHead({
-// 	bodyAttrs: {
-// 		class: "",
-// 	},
-// });
+const { sendAnalytics } = useAnalytics();
+onMounted(() => {
+	execute(sendAnalytics);
+});
 </script>
 
 <template>

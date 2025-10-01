@@ -113,7 +113,7 @@
 								<div class="mt-2 text-sm">{{ message.content }}</div>
 							</div>
 						</div>
-						<p class="w-full text-center">No Data</p>
+						<p class="w-full text-center" v-else>No Data</p>
 					</div>
 				</template>
 			</UCard>

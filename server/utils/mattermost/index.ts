@@ -44,14 +44,6 @@ export interface NotifyProps {
 	email_threads: string;
 }
 
-export interface Props {}
-
-export interface Timezone {
-	useAutomaticTimezone: string;
-	manualTimezone: string;
-	automaticTimezone: string;
-}
-
 export interface MMUser {
 	id: string;
 	create_at: number;

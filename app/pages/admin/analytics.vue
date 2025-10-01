@@ -65,10 +65,7 @@
 				<UTable
 					:columns="columns"
 					:data="users"
-					:pagination="{
-						pageIndex: page,
-						pageSize: 20,
-					}"
+					:pagination="{ pageIndex: page, pageSize: 60 }"
 				>
 					<template #actions-data="{ row }">
 						<UButton
@@ -83,6 +80,11 @@
 						</UButton>
 					</template>
 				</UTable>
+				<UModal :open="showUserModal" title="User Details" :description="selectedUser?.email" @update:open="showUserModal = false">
+					<template #body>
+						<AdminUserDetails v-if="selectedUser" :user="selectedUser" />
+					</template>
+				</UModal>
 			</UCard>
 		</div>
 	</UContainer>
@@ -106,7 +108,7 @@ const columns: TableColumn<MMUser>[] = [
 	},
 	{
 		accessorKey: "username",
-		header: "Email",
+		header: "Username",
 		cell: (info) => info.getValue(),
 	},
 	{
@@ -126,7 +128,12 @@ const columns: TableColumn<MMUser>[] = [
 		cell: (info) => {
 			return h(
 				"button",
-				{ onClick: () => console.log("clicked row", info.row.original) },
+				{
+					onClick: () => {
+						selectedUser.value = info.row.original;
+						showUserModal.value = true;
+					},
+				},
 				"View"
 			);
 		},
@@ -141,7 +148,8 @@ interface ReferralCount {
 // Chart options
 const weeklyLabels = ref<string[]>([]);
 const referralData = ref<ReferralCount[]>([]);
-
+const selectedUser = ref<MMUser | null>(null);
+const showUserModal = ref(false);
 const signupTrendOptions = computed(
 	() =>
 		({
