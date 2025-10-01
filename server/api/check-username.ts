@@ -40,7 +40,7 @@ async function checkUsername(term: string) {
 }
 
 export default defineEventHandler(async (event) => {
-	const { username } = await readValidatedBody(event, schema.parseAsync);
+	const { username } = await getValidatedQuery(event, schema.parseAsync);
 	const exists = await checkUsername(username);
 	return {
 		exists,

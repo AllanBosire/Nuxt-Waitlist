@@ -66,4 +66,6 @@ export async function ensureAdmin(event: H3Event) {
 	if (!isAdmin(user)) {
 		throw createError({ statusCode: 401 });
 	}
+
+	return user;
 }

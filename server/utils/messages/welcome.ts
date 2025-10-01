@@ -6,7 +6,7 @@ export function getWelcomeBotMessage(user: MMUser) {
 	});
 }
 
-export async function sendWelcomeMessage(user_id: string, version: number | string) {
+export async function sendWelcomeMessage(user_id: string, version: number | string, skip = false) {
 	const user = await getMatterMostUserbyId(user_id);
 	if (!user) {
 		throw createError("Unable to obtain mattermost user: " + user_id);
@@ -32,14 +32,15 @@ export async function sendWelcomeMessage(user_id: string, version: number | stri
 	}
 
 	const { markdown } = await getWelcomeBotMessage(user);
-	const { error: postError } = await execute(bot.createPost, {
-		channel_id: dmChannel.id,
-		message: markdown,
-	});
-
-	if (postError) {
-		consola.fatal("Unable to create post", postError);
-		return;
+	if (!skip) {
+		const { error: postError } = await execute(bot.createPost, {
+			channel_id: dmChannel.id,
+			message: markdown,
+		});
+		if (postError) {
+			consola.fatal("Unable to create post", postError);
+			return;
+		}
 	}
 
 	const db = useDrizzle();

@@ -21,14 +21,19 @@ declare global {
 }
 
 export function useMatterClient(bot: Bot) {
+	const config = useRuntimeConfig();
+	if (!config.mattermost.bots[bot]) {
+		throw createError("No such bot");
+	}
+
 	if (globalThis.botClients?.has(bot)) {
 		return globalThis.botClients.get(bot)!;
 	}
 
 	const client = new clients.Client4();
-	const config = useRuntimeConfig();
 	client.setUrl(config.public.mmUrl);
 	const token = config.mattermost.bots[bot]?.token;
+
 	client.setToken(token);
 
 	console.info("Initialised mattermost bot: ", bot);

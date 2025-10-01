@@ -1,15 +1,10 @@
 <script setup lang="ts">
-const mobileMenu = ref();
 const config = useAppConfig();
 
 const route = useRoute();
 const home = computed(() => route.fullPath === "/");
 
 const { data: me } = useMe();
-
-function logout() {
-
-}
 </script>
 
 <template>
@@ -18,7 +13,7 @@ function logout() {
 			<div class="flex items-center gap-5">
 				<NuxtLink to="/" class="flex items-center gap-2">
 					<Logo class="w-5 h-5" />
-					<p class="font-bold text-xl font-getar tracking-wide">finueva</p>
+					<LogoName />
 				</NuxtLink>
 			</div>
 			<div class="gap-2 flex">

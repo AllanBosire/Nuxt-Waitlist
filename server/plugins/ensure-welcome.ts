@@ -46,7 +46,8 @@ export default defineNitroPlugin(async () => {
 			return deleteUser(user.email);
 		}
 
-		sendWelcomeMessage(result.id, version);
+		consola.info("Welcome: ", user.email);
+		sendWelcomeMessage(result.id, version, true);
 	});
 
 	consola.success("Listening for user registrations");

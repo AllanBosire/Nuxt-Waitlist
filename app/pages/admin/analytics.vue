@@ -1,90 +1,91 @@
 <template>
-	<div class="p-6">
-		<UContainer>
-			<div class="grid gap-6">
-				<!-- Header -->
-				<div class="flex justify-between items-center">
-					<h1 class="text-2xl font-bold">Analytics Dashboard</h1>
-				</div>
+	<UContainer>
+		<div class="grid gap-6">
+			<div class="flex justify-between items-center">
+				<h1 class="text-2xl font-bold">Analytics Dashboard</h1>
+			</div>
 
-				<!-- Stats Cards -->
-				<div class="grid md:grid-cols-3 gap-6">
-					<UCard>
-						<div class="text-center">
-							<div class="text-sm text-gray-400">Total Sign-ups</div>
-							<div class="text-3xl font-bold mt-2">
-								{{ userCount?.total_users_count }}
-							</div>
+			<div class="grid md:grid-cols-3 gap-6">
+				<UCard>
+					<div class="text-center">
+						<div class="text-sm text-gray-400">Total Sign-ups</div>
+						<div class="text-3xl font-bold mt-2">
+							{{ userCount?.total_users_count }}
 						</div>
-					</UCard>
+					</div>
+				</UCard>
 
-					<UCard>
-						<div class="text-center">
-							<div class="text-sm text-gray-400">This Week's Sign-ups</div>
-							<div class="text-3xl font-bold mt-2">{{ weeklySignups }}</div>
-						</div>
-					</UCard>
+				<UCard>
+					<div class="text-center">
+						<div class="text-sm text-gray-400">This Week's Sign-ups</div>
+						<div class="text-3xl font-bold mt-2">{{ weeklySignups }}</div>
+					</div>
+				</UCard>
 
-					<UCard>
-						<div class="text-center">
-							<div class="text-sm text-gray-400">Active Users</div>
-							<div class="text-3xl font-bold mt-2">{{ activeUsers }}</div>
-						</div>
-					</UCard>
-				</div>
+				<UCard>
+					<div class="text-center">
+						<div class="text-sm text-gray-400">Active Users</div>
+						<div class="text-3xl font-bold mt-2">{{ activeUsers }}</div>
+					</div>
+				</UCard>
+			</div>
 
-				<!-- Charts -->
-				<div class="grid md:grid-cols-2 gap-6">
-					<!-- Sign-up Trend -->
-					<UCard>
-						<template #header>
-							<h3 class="text-lg font-semibold">Weekly Sign-up Trend</h3>
-						</template>
-						<ClientOnly>
-							<VChart :option="signupTrendOptions" class="!h-[400px]" />
-						</ClientOnly>
-					</UCard>
-
-					<UCard>
-						<template #header>
-							<h3 class="text-lg font-semibold">Top Referrers</h3>
-						</template>
-						<ClientOnly>
-							<VChart :option="referralOptions" class="!h-[400px]" />
-						</ClientOnly>
-					</UCard>
-				</div>
+			<div class="grid md:grid-cols-2 gap-6">
+				<UCard>
+					<template #header>
+						<h3 class="text-lg font-semibold">Weekly Sign-up Trend</h3>
+					</template>
+					<ClientOnly>
+						<VChart :option="signupTrendOptions" class="!h-[400px]" />
+					</ClientOnly>
+				</UCard>
 
 				<UCard>
 					<template #header>
-						<div class="flex justify-between items-center">
-							<h3 class="text-lg font-semibold">System Users</h3>
-							<UInput
-								v-model="search"
-								icon="i-heroicons-magnifying-glass"
-								placeholder="Search users..."
-							/>
-						</div>
+						<h3 class="text-lg font-semibold">Top Referrers</h3>
 					</template>
-
-					<UTable :columns="columns" :rows="users">
-						<template #actions-data="{ row }">
-							<UButton
-								v-if="!row.getValue('create_at')"
-								color="error"
-								variant="ghost"
-								icon="i-heroicons-trash"
-								size="xs"
-								@click="unsubscribeUser(row.getValue('id'))"
-							>
-								Unsubscribe
-							</UButton>
-						</template>
-					</UTable>
+					<ClientOnly>
+						<VChart :option="referralOptions" class="!h-[400px]" />
+					</ClientOnly>
 				</UCard>
 			</div>
-		</UContainer>
-	</div>
+
+			<UCard>
+				<template #header>
+					<div class="flex justify-between items-center">
+						<h3 class="text-lg font-semibold">System Users</h3>
+						<UInput
+							v-model="search"
+							icon="i-heroicons-magnifying-glass"
+							placeholder="Search users..."
+						/>
+					</div>
+				</template>
+
+				<UTable
+					:columns="columns"
+					:data="users"
+					:pagination="{
+						pageIndex: page,
+						pageSize: 20,
+					}"
+				>
+					<template #actions-data="{ row }">
+						<UButton
+							v-if="!row.getValue('create_at')"
+							color="error"
+							variant="ghost"
+							icon="i-heroicons-trash"
+							size="xs"
+							@click="unsubscribeUser(row.getValue('id'))"
+						>
+							Unsubscribe
+						</UButton>
+					</template>
+				</UTable>
+			</UCard>
+		</div>
+	</UContainer>
 </template>
 
 <script setup lang="ts">
@@ -93,6 +94,7 @@ import type { MMUser } from "~~/server/utils/mattermost";
 
 definePageMeta({
 	middleware: "admin",
+	layout: "admin",
 });
 
 const search = ref("");
@@ -102,11 +104,11 @@ const columns: TableColumn<MMUser>[] = [
 		accessorKey: "id",
 		header: "ID",
 	},
-  {
-    accessorKey: "username",
-    header: "Email",
-    cell: (info) => info.getValue(),
-  },
+	{
+		accessorKey: "username",
+		header: "Email",
+		cell: (info) => info.getValue(),
+	},
 	{
 		accessorKey: "email",
 		header: "Email",
@@ -239,6 +241,7 @@ const weeklyData = computed(() => {
 
 const toast = useToast();
 async function unsubscribeUser(userId: string) {
+	return;
 	const { error } = await execute(
 		$fetch(`/mattermost/api/v4/users/${userId}/unsubscribe`, {
 			method: "POST",
@@ -247,7 +250,7 @@ async function unsubscribeUser(userId: string) {
 
 	if (error) {
 		toast.add({
-			title: error.message,
+			title: error?.message,
 			color: "error",
 		});
 		return;
@@ -258,6 +261,4 @@ async function unsubscribeUser(userId: string) {
 		color: "success",
 	});
 }
-
-watch(users, console.log)
 </script>

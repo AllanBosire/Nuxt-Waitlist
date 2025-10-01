@@ -15,8 +15,8 @@ importers:
         specifier: ^1.11.0
         version: 1.11.0(db0@0.3.2(drizzle-orm@0.33.0(@opentelemetry/api@1.9.0)(postgres@3.4.7)))(ioredis@5.8.0)(magicast@0.3.5)
       '@nuxt/ui':
-        specifier: 4.0.0-alpha.2
-        version: 4.0.0-alpha.2(@babel/parser@7.28.4)(change-case@5.4.4)(db0@0.3.2(drizzle-orm@0.33.0(@opentelemetry/api@1.9.0)(postgres@3.4.7)))(embla-carousel@8.6.0)(ioredis@5.8.0)(magicast@0.3.5)(typescript@5.7.2)(vite@7.1.7(@types/node@24.5.2)(jiti@2.6.0)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))(vue-router@4.5.1(vue@3.5.22(typescript@5.7.2)))(vue@3.5.22(typescript@5.7.2))(zod@4.1.11)
+        specifier: ^4.0.0
+        version: 4.0.0(@babel/parser@7.28.4)(change-case@5.4.4)(db0@0.3.2(drizzle-orm@0.33.0(@opentelemetry/api@1.9.0)(postgres@3.4.7)))(embla-carousel@8.6.0)(ioredis@5.8.0)(magicast@0.3.5)(typescript@5.7.2)(vite@7.1.7(@types/node@24.5.2)(jiti@2.6.0)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))(vue-router@4.5.1(vue@3.5.22(typescript@5.7.2)))(vue@3.5.22(typescript@5.7.2))(zod@4.1.11)
       '@stefanobartoletti/nuxt-social-share':
         specifier: 1.2.1
         version: 1.2.1(magicast@0.3.5)
@@ -1021,17 +1021,17 @@ packages:
     engines: {node: '>=18.12.0'}
     hasBin: true
 
-  '@nuxt/ui@4.0.0-alpha.2':
-    resolution: {integrity: sha512-ETYd3xVnNhaiwlUetpsVdLb9e2SrlKFYwagEpFTLZX8vLuo6ZMn14rUZjDJNkqrSZunTqaRvgzRBqwWQLr0ZSw==}
+  '@nuxt/ui@4.0.0':
+    resolution: {integrity: sha512-pu5FZ8NZN2YKAiExOXuM0ImjOMe3h4/CsVgm71it+1On7OmIYHeh6SGgvaSX4Ly7FibUFllZMzJ+M5jo6KAEuw==}
     hasBin: true
     peerDependencies:
       '@inertiajs/vue3': ^2.0.7
-      joi: ^17.13.0
+      joi: ^18.0.0
       superstruct: ^2.0.0
       typescript: ^5.6.3
       valibot: ^1.0.0
       vue-router: ^4.5.0
-      yup: ^1.6.0
+      yup: ^1.7.0
       zod: ^3.24.0 || ^4.0.0
     peerDependenciesMeta:
       '@inertiajs/vue3':
@@ -6523,7 +6523,7 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  '@nuxt/ui@4.0.0-alpha.2(@babel/parser@7.28.4)(change-case@5.4.4)(db0@0.3.2(drizzle-orm@0.33.0(@opentelemetry/api@1.9.0)(postgres@3.4.7)))(embla-carousel@8.6.0)(ioredis@5.8.0)(magicast@0.3.5)(typescript@5.7.2)(vite@7.1.7(@types/node@24.5.2)(jiti@2.6.0)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))(vue-router@4.5.1(vue@3.5.22(typescript@5.7.2)))(vue@3.5.22(typescript@5.7.2))(zod@4.1.11)':
+  '@nuxt/ui@4.0.0(@babel/parser@7.28.4)(change-case@5.4.4)(db0@0.3.2(drizzle-orm@0.33.0(@opentelemetry/api@1.9.0)(postgres@3.4.7)))(embla-carousel@8.6.0)(ioredis@5.8.0)(magicast@0.3.5)(typescript@5.7.2)(vite@7.1.7(@types/node@24.5.2)(jiti@2.6.0)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))(vue-router@4.5.1(vue@3.5.22(typescript@5.7.2)))(vue@3.5.22(typescript@5.7.2))(zod@4.1.11)':
     dependencies:
       '@ai-sdk/vue': 2.0.54(vue@3.5.22(typescript@5.7.2))(zod@4.1.11)
       '@iconify/vue': 5.0.0(vue@3.5.22(typescript@5.7.2))

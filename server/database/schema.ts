@@ -33,3 +33,12 @@ export const waitlist = pgTable(
 		emailIdx: uniqueIndex("email_idx").on(table.email),
 	})
 );
+
+export const broadcastMessages = pgTable("messages", {
+	id: serial("id"),
+	sender: varchar("sender", { length: 255 }),
+	recipients: jsonb("recipients").$type<Array<string>>(),
+	timestamp: timestamp("timestamp").defaultNow().notNull(),
+	bot: varchar("bot", { length: 255 }),
+	content: text("content"),
+});

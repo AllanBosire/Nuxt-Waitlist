@@ -1,19 +1,17 @@
 <script setup lang="ts">
-useHead({
-	bodyAttrs: {
-		class: "",
-	},
-});
+// useHead({
+// 	bodyAttrs: {
+// 		class: "",
+// 	},
+// });
 </script>
 
 <template>
 	<UApp>
-		<NuxtLoadingIndicator />
-		<div class="flex flex-col justify-between px-8 lg:px-0 min-h-screen relative">
-			<AppNavbar />
+		<NuxtLayout>
+			<NuxtLoadingIndicator />
 			<NuxtPage />
-			<AppFooter />
-		</div>
+		</NuxtLayout>
 	</UApp>
 </template>
 
