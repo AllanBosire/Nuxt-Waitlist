@@ -1,4 +1,13 @@
-import { pgTable, text, uniqueIndex, serial, timestamp, varchar, jsonb } from "drizzle-orm/pg-core";
+import {
+	pgTable,
+	text,
+	uniqueIndex,
+	serial,
+	timestamp,
+	varchar,
+	jsonb,
+	boolean,
+} from "drizzle-orm/pg-core";
 import { RuntimeConfig } from "nuxt/schema";
 type PaddedNumber =
 	| "01"
@@ -26,11 +35,29 @@ export const waitlist = pgTable(
 		email: text("email").notNull().unique(),
 		createdAt: timestamp("created_at").defaultNow(),
 		referrer: varchar("referrer", { length: 255 }),
+		invite_code: varchar("invite_code", { length: 64 }),
 		pswd: text("pswd"),
 		sent_bot_messages: jsonb("sent_bot_messages").$type<SBM>(),
 	},
 	(table) => ({
 		emailIdx: uniqueIndex("email_idx").on(table.email),
+		inviteCodeIdx: uniqueIndex("invite_code_idx").on(table.invite_code),
+	})
+);
+
+export const invites = pgTable(
+	"invites",
+	{
+		id: serial("id"),
+		code: varchar("code", { length: 64 }).notNull().unique(),
+		created_by: varchar("created_by", { length: 255 }),
+		used_by: varchar("used_by", { length: 255 }),
+		created_at: timestamp("created_at").defaultNow(),
+		used_at: timestamp("used_at"),
+		is_active: boolean("is_active").default(true),
+	},
+	(table) => ({
+		codeIdx: uniqueIndex("code_idx").on(table.code),
 	})
 );
 

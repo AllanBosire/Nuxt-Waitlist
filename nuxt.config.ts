@@ -56,6 +56,10 @@ export default defineNuxtConfig({
 					version: 1,
 					token: "",
 				},
+				invite: {
+					version: 1,
+					token: "",
+				},
 			},
 			/** comma separated admin emails */
 			admins: "",

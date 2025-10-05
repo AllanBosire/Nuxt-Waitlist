@@ -12,10 +12,11 @@ interface WaitlistError {
 type Schema = z.output<typeof schema>;
 
 const referrer = useRouteQuery("referrer");
-const state = reactive<Partial<Schema>>({
+const state = reactive<Partial<Schema & { inviteCode?: string }>>({
 	email: undefined,
 	username: undefined,
 	referrer: referrer.value,
+	inviteCode: undefined,
 });
 
 const email = ref("");
@@ -86,6 +87,7 @@ const schema = z
 		email: z.email("Invalid email"),
 		username: z.optional(z.string().check(z.minLength(4))),
 		referrer: z.optional(z.string()),
+		inviteCode: z.string().check(z.minLength(6, "Invite code required")),
 	})
 	.check(
 		z.superRefine((_, ctx) => {
@@ -95,7 +97,6 @@ const schema = z
 					path: ["username"],
 					message: "Sorry, this username is already taken",
 				});
-
 				errors.value = [
 					{
 						code: "custom",
@@ -114,7 +115,12 @@ const joinWaitlist = async () => {
 	try {
 		await $fetch("api/join-waitlist", {
 			method: "POST",
-			body: state,
+			body: {
+				email: state.email,
+				username: state.username,
+				referrer: state.referrer,
+				inviteCode: state.inviteCode,
+			},
 		});
 
 		email.value = "";
@@ -156,6 +162,9 @@ const joinWaitlist = async () => {
 				</UFormField>
 				<UFormField class="mt-2" name="email">
 					<UInput class="w-full" v-model="state.email" placeholder="Email address" />
+				</UFormField>
+				<UFormField class="mt-2" name="inviteCode">
+					<UInput class="w-full" v-model="state.inviteCode" placeholder="Invite code" required />
 				</UFormField>
 			</div>
 			<div class="mt-6">

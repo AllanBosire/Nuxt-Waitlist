@@ -48,6 +48,9 @@ export interface Markdown {
 	welcome: {
 		username: string;
 	};
+	invite: {
+		link: string;
+	};
 }
 
 /**
