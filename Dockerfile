@@ -24,8 +24,8 @@ COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
 
 COPY entrypoint.sh .
 
-RUN chmod +x entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 3000
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
