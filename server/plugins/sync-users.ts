@@ -29,6 +29,10 @@ async function* getAllUsers(page: number = 0) {
 }
 
 export default defineNitroPlugin(async () => {
+	if (import.meta.dev) {
+		return;
+	}
+	
 	const db = useDrizzle();
 	for await (const user of getAllUsers()) {
 		db.insert(tables.waitlist)

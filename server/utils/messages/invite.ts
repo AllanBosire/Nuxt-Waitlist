@@ -1,54 +1,50 @@
+import { render } from "@vue-email/render";
 import { consola } from "consola";
 import { joinURL } from "ufo";
+import { Invite } from "~~/server/templates/emails/views";
+
+export function getInviteLink(token: string) {
+	const config = useRuntimeConfig();
+	return joinURL(config.public.appUrl) + "?token=" + token;
+}
 
 export function getInviteBotMessage(token: string) {
-	const config = useRuntimeConfig();
-	const link = joinURL(config.public.appUrl) + "?code=" + token;
+	const link = getInviteLink(token);
 	return getMarkdown("invite", {
 		link,
 	});
 }
 
-export async function sendInviteMessage(user_id: string, version: number | string, skip = false) {
-	const user = await getMatterMostUserbyId(user_id);
+export async function sendInviteKnowhowMessage(inviter_user_id: string, version: number | string) {
+	const user = await getMatterMostUserbyId(inviter_user_id);
 	if (!user) {
-		throw createError("Unable to obtain mattermost user: " + user_id);
+		throw createError("Unable to obtain mattermost user as invitor: " + inviter_user_id);
 	}
 
 	const bot = useMatterClient("invite");
-	if (!bot) {
-		throw createError("No invite bot found");
-	}
 
-	if (!user_id) {
-		throw createError("No user Id passed to function");
-	}
-
+	const token = createInviteToken(inviter_user_id);
 	const { result: dmChannel, error: dmError } = await execute(bot.createDirectChannel, [
 		await bot.userId(),
-		user_id,
+		inviter_user_id,
 	]);
-
 	if (dmError) {
 		consola.fatal("Unable to create DM:", dmError);
 		return;
 	}
 
-	const { markdown } = await getInviteBotMessage(user);
-	if (!skip) {
-		const { error: postError } = await execute(bot.createPost, {
-			channel_id: dmChannel.id,
-			message: markdown,
-		});
-		if (postError) {
-			consola.fatal("Unable to create post", postError);
-			return;
-		}
+	const { markdown } = await getInviteBotMessage(token);
+	const { error: postError } = await execute(bot.createPost, {
+		channel_id: dmChannel.id,
+		message: markdown,
+	});
+	if (postError) {
+		consola.fatal("Unable to create post", postError);
+		return;
 	}
 
-	const db = useDrizzle();
 	const { error: dbUpdateError } = await execute(
-		db
+		useDrizzle()
 			.update(tables.waitlist)
 			.set({
 				sent_bot_messages: sql`
@@ -69,5 +65,34 @@ export async function sendInviteMessage(user_id: string, version: number | strin
 		return;
 	}
 
-	consola.success("Sent Invite DM to ", user_id);
+	consola.success("Sent Invite Knowhow to: ", inviter_user_id);
+}
+
+export async function sendInviteEmail(inviter_user_id: string, invitee_email: string) {
+	const user = await getMatterMostUserbyId(inviter_user_id);
+	if (!user) {
+		throw createError("Unable to obtain mattermost user as invitor: " + inviter_user_id);
+	}
+
+	const code = createInviteToken(inviter_user_id);
+	const inviteUrl = getInviteLink(code);
+
+	const html = await render(Invite, { inviteUrl, code });
+	const { error, result } = await execute(
+		sendMail({
+			to: invitee_email,
+			subject: "You're Invited to Join Finueva!",
+			html,
+		})
+	);
+
+	if (error) {
+		throw createError({
+			message: "Failed to send invite",
+			cause: error,
+		});
+	}
+
+	consola.info("Successfully send invite mail to: ", invitee_email);
+	return result;
 }

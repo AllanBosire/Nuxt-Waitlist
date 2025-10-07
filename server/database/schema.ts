@@ -50,7 +50,7 @@ export const invites = pgTable(
 	{
 		id: serial("id"),
 		code: varchar("code", { length: 64 }).notNull().unique(),
-		created_by: varchar("created_by", { length: 255 }),
+		created_by: varchar("created_by", { length: 255 }).notNull(),
 		used_by: varchar("used_by", { length: 255 }),
 		created_at: timestamp("created_at").defaultNow(),
 		used_at: timestamp("used_at"),
@@ -69,47 +69,6 @@ export const broadcastMessages = pgTable("messages", {
 	bot: varchar("bot", { length: 255 }),
 	content: text("content"),
 });
-
-interface Analytics {
-	deviceType: string;
-	browser: {
-		name: any;
-		version: any;
-	};
-	os: string;
-	referrer: string;
-	timestamp: string;
-	screen: {
-		width: number;
-		height: number;
-	};
-	language: string;
-	utm: Record<string, string | null>;
-	timezone: string;
-	sessionId: string;
-	scrollDepth: number;
-	interactions: {
-		type: string;
-		target: any;
-		time: number;
-	}[];
-	performance: {
-		deviceMemory: any;
-		hardwareConcurrency: number;
-	};
-	network: {
-		downlink: any;
-		effectiveType: any;
-		rtt: any;
-	};
-	adBlock: boolean;
-	accessibility: {
-		prefersReducedMotion: boolean;
-		prefersColorScheme: string;
-	};
-	multiTab: boolean;
-	incognito: unknown;
-}
 
 export const analytics = pgTable(
 	"analytics",

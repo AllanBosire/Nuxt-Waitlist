@@ -19,7 +19,7 @@ export interface MattermostUserCreateResponse {
 	roles: string;
 	locale: string;
 	notify_props: NotifyProps;
-	props: Props;
+	props: {};
 	last_password_update: number;
 	last_picture_update: number;
 	failed_attempts: number;
@@ -59,7 +59,7 @@ export interface MMUser {
 	roles: string;
 	locale: string;
 	notify_props: NotifyProps;
-	props: Props;
+	props: {};
 	last_password_update: number;
 	last_picture_update: number;
 	failed_attempts: number;
@@ -150,10 +150,9 @@ export function getUserByEmail(email: string) {
 	});
 }
 
-export async function createMattermostUser(_user: { username: string; email: string }) {
+export async function createMattermostUser(_user: { password: string; email: string }) {
 	const config = useRuntimeConfig();
 	const token = v7();
-	const rawPswd = v4();
 	const user = await $fetch<MattermostUserCreateResponse>(
 		joinURL(config.mattermost.url, "/api/v4/users"),
 		{
@@ -163,8 +162,7 @@ export async function createMattermostUser(_user: { username: string; email: str
 			},
 			body: {
 				email: _user.email,
-				username: normaliseUsername(_user.username),
-				password: normalisePassword(rawPswd),
+				password: _user.password,
 			},
 			onResponseError({ response }) {
 				consola.error(response._data);
@@ -177,26 +175,6 @@ export async function createMattermostUser(_user: { username: string; email: str
 		return undefined;
 	}
 
-	const { data: pswd, error } = encrypt(rawPswd, token);
-	if (error || !pswd) {
-		throw createError({
-			message: "Encountered an error while attempting encryption",
-			cause: error,
-		});
-	}
-
-	useDrizzle()
-		.update(tables.waitlist)
-		.set({
-			pswd: pswd,
-		})
-		.where(eq(tables.waitlist.email, _user.email))
-		.execute()
-		.catch((e) => {
-			consola.error(e);
-			consola.fatal("Could not set db password", e.message, pswd);
-		});
-
 	addUserToTeam(user.id, config.mattermost.team_id).catch((e) => {
 		consola.error(e);
 		consola.fatal("Could not add mattermost user to finueva team");
@@ -207,7 +185,6 @@ export async function createMattermostUser(_user: { username: string; email: str
 	return {
 		user,
 		link,
-		pswd: normalisePassword(rawPswd),
 	};
 }
 

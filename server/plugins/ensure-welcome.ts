@@ -5,18 +5,20 @@ import { deleteUser } from "../utils/user";
 import { sendWelcomeMessage } from "../utils/messages/welcome";
 
 export default defineNitroPlugin(async () => {
+	if (import.meta.dev) {
+		return;
+	}
+
 	const db = useDrizzle();
 
 	const { version } = useRuntimeConfig().mattermost.bots.welcome;
-	const needInvites = import.meta.dev
-		? [{ email: "archiethebig@gmail.com" }]
-		: await db.query.waitlist.findMany({
-				where(fields, { sql, or, isNull, eq }) {
-					return or(
-						isNull(fields.sent_bot_messages),
-						eq(fields.sent_bot_messages, sql`'{}'::jsonb`),
-						sql`(${fields.sent_bot_messages}->'welcome') = '{}'::jsonb`,
-						sql`
+	const needInvites = await db.query.waitlist.findMany({
+		where(fields, { sql, or, isNull, eq }) {
+			return or(
+				isNull(fields.sent_bot_messages),
+				eq(fields.sent_bot_messages, sql`'{}'::jsonb`),
+				sql`(${fields.sent_bot_messages}->'welcome') = '{}'::jsonb`,
+				sql`
 				EXISTS (
 					SELECT 1
 					FROM jsonb_each_text(${fields.sent_bot_messages}->'welcome') AS elem(version_key, value)
@@ -24,9 +26,9 @@ export default defineNitroPlugin(async () => {
 					AND (version_key)::int < ${toNumber(version)}
 				)
 			`
-					);
-				},
-		  });
+			);
+		},
+	});
 
 	const bot = useMatterClient("welcome");
 	const botSocket = bot.getWebSocket();

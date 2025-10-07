@@ -25,15 +25,9 @@ export function sendMail(
 	});
 }
 
-export async function sendWelcomeEmail(data: {
-	email: string;
-	username: string;
-	password: string;
-	link: string;
-}) {
+export async function sendWelcomeEmail(data: { email: string; username: string; link: string }) {
 	const html = await render(Welcome, {
 		link: data.link,
-		password: data.password,
 		username: data.username,
 	});
 
