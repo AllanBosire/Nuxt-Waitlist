@@ -21,10 +21,11 @@ RUN corepack enable
 COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/server/database ./server/database
 COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
+
 COPY entrypoint.sh .
 
-RUN chmod +x /app/entrypoint.sh
+RUN chmod +x entrypoint.sh
 
 EXPOSE 3000
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]

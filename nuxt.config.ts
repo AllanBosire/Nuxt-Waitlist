@@ -60,6 +60,9 @@ export default defineNuxtConfig({
 					version: 1,
 					token: "",
 				},
+				notifications: {
+					token: "",
+				},
 			},
 			/** comma separated admin emails */
 			admins: "",

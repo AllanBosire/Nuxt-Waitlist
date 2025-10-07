@@ -22,6 +22,7 @@
     "@vueuse/core": "^12.8.2",
     "drizzle-orm": "^0.33.0",
     "gray-matter": "^4.0.3",
+    "js-confetti": "^0.13.1",
     "mini-svg-data-uri": "^1.4.4",
     "moustache": "^0.0.4",
     "mustache": "^4.2.0",

@@ -1,5 +1,6 @@
 import { render } from "@vue-email/render";
 import { consola } from "consola";
+import { count } from "drizzle-orm";
 import { joinURL } from "ufo";
 import { Invite } from "~~/server/templates/emails/views";
 
@@ -15,8 +16,64 @@ export function getInviteBotMessage(token: string) {
 	});
 }
 
+export function getInviteUpdateBotMessage(
+	token: string,
+	refferral_count: number,
+	username: string
+) {
+	const link = getInviteLink(token);
+	return getMarkdown("invite-update", {
+		link,
+		refferral_count,
+		username,
+	});
+}
+
+export async function sendInviteUpdateMessage(inviter_user_id: string, invitee_username: string) {
+	const user = await getMatterMostUserById(inviter_user_id);
+	if (!user) {
+		throw createError("Unable to obtain mattermost user as invitor: " + inviter_user_id);
+	}
+
+	const bot = useMatterClient("invite");
+
+	const token = createInviteToken(inviter_user_id);
+	const { result: dmChannel, error: dmError } = await execute(bot.createDirectChannel, [
+		await bot.userId(),
+		inviter_user_id,
+	]);
+	if (dmError) {
+		consola.fatal("Unable to create DM:", dmError);
+		return;
+	}
+
+	const [{ count: refferral_count }] = await useDrizzle()
+		.select({
+			count: count(),
+		})
+		.from(tables.waitlist)
+		.where(
+			or(
+				eq(tables.waitlist.referrer, inviter_user_id),
+				eq(tables.waitlist.referrer, user.email)
+			)
+		);
+
+	const { markdown } = await getInviteUpdateBotMessage(token, refferral_count, invitee_username);
+	const { error: postError } = await execute(bot.createPost, {
+		channel_id: dmChannel.id,
+		message: markdown,
+	});
+	if (postError) {
+		consola.fatal("Unable to create post", postError);
+		return;
+	}
+
+	consola.success("Sent New Invite Link To: ", inviter_user_id);
+}
+
 export async function sendInviteKnowhowMessage(inviter_user_id: string, version: number | string) {
-	const user = await getMatterMostUserbyId(inviter_user_id);
+	const user = await getMatterMostUserById(inviter_user_id);
 	if (!user) {
 		throw createError("Unable to obtain mattermost user as invitor: " + inviter_user_id);
 	}
@@ -69,7 +126,7 @@ export async function sendInviteKnowhowMessage(inviter_user_id: string, version:
 }
 
 export async function sendInviteEmail(inviter_user_id: string, invitee_email: string) {
-	const user = await getMatterMostUserbyId(inviter_user_id);
+	const user = await getMatterMostUserById(inviter_user_id);
 	if (!user) {
 		throw createError("Unable to obtain mattermost user as invitor: " + inviter_user_id);
 	}
@@ -93,6 +150,6 @@ export async function sendInviteEmail(inviter_user_id: string, invitee_email: st
 		});
 	}
 
-	consola.info("Successfully send invite mail to: ", invitee_email);
-	return result;
+	consola.info("Successfully sent invite mail to: ", invitee_email);
+	return inviteUrl;
 }

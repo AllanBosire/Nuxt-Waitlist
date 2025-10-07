@@ -2,10 +2,6 @@ import { consola } from "consola";
 import { deleteUser } from "../utils/user";
 
 export default defineNitroPlugin(async () => {
-	if (import.meta.dev) {
-		return;
-	}
-	
 	const bot = useMatterClient("welcome");
 	const botSocket = bot.getWebSocket();
 	botSocket.on("user_updated", async (message: { user: MMUser }) => {

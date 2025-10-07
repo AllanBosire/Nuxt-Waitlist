@@ -11,11 +11,22 @@ export default defineEventHandler(async (event) => {
 	}
 
 	const config = useRuntimeConfig();
-	const user = await event.$fetch<MMUser>(joinURL(config.mattermost.url, "/api/v4/users/me"), {
-		headers: {
-			Authorization: `Bearer ${cookie}`,
-		},
-	});
+	const { result: user, error } = await execute(
+		event.$fetch<MMUser>,
+		joinURL(config.mattermost.url, "/api/v4/users/me"),
+		{
+			headers: {
+				Authorization: `Bearer ${cookie}`,
+			},
+		}
+	);
+
+	if (error) {
+		throw createError({
+			message: "Unable to validate with mattermost server",
+			cause: error,
+		});
+	}
 
 	return {
 		...user,

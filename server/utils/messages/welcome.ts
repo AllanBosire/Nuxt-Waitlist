@@ -7,7 +7,7 @@ export function getWelcomeBotMessage(user: MMUser) {
 }
 
 export async function sendWelcomeMessage(user_id: string, version: number | string, skip = false) {
-	const user = await getMatterMostUserbyId(user_id);
+	const user = await getMatterMostUserById(user_id);
 	if (!user) {
 		throw createError("Unable to obtain mattermost user: " + user_id);
 	}

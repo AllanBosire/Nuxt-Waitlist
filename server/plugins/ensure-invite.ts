@@ -45,6 +45,8 @@ export default defineEventHandler(async () => {
 	const inviteBot = useMatterClient("invite");
 
 	const BOT_ID = await inviteBot.userId();
+	// const adminEmails = useRuntimeConfig().mattermost.admins.split(",").filter(Boolean);
+	// const admins = await settle(adminEmails.map((email) => getMatterMostUserByEmail(email)));
 	inviteBot.getWebSocket().on("posted", (data: IncomingPostEvent) => {
 		const { message, user_id } = tryParse<Post>(data.post);
 		if (user_id === BOT_ID) {
@@ -56,8 +58,24 @@ export default defineEventHandler(async () => {
 		}
 
 		const emails = String(message).matchAll(emailRegex);
-		emails.forEach(([email]) => {
-			sendInviteEmail(user_id, email);
+		emails.forEach(async ([email]) => {
+			const dm = await getOrCreateDM({
+				bot: "invite",
+				user_id,
+				message: "Sending invite to: " + email,
+			});
+			showTyping(
+				"invite",
+				dm.id,
+				(async function () {
+					const url = await sendInviteEmail(user_id, email);
+					await getOrCreateDM({
+						bot: "invite",
+						user_id,
+						message: "Sent user invite to: " + email + " URL: " + url,
+					});
+				})()
+			);
 		});
 	});
 });

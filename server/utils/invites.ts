@@ -41,3 +41,9 @@ export function inValidateToken(token: string, used_by: string) {
 		})
 		.where(eq(tables.invites.code, token));
 }
+
+
+
+export function postInviteeJoin(user_id: string, invitee_emal: string) {
+	sendInviteKnowhowMessage;
+}

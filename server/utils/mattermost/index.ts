@@ -90,7 +90,7 @@ export interface Timezone {
 	automaticTimezone: string;
 }
 
-export function getMatterMostUserbyId(id: string) {
+export function getMatterMostUserById(id: string) {
 	const config = useRuntimeConfig();
 	return $fetch<MMUser[]>(joinURL(config.mattermost.url, "/api/v4/users/ids"), {
 		method: "POST",
@@ -125,6 +125,61 @@ export function getMatterMostUserByEmail(email: string) {
 		consola.fatal(e);
 		return undefined;
 	});
+}
+
+export async function getMatterMostUserByUsername(username: string) {
+	if (!username) {
+		return undefined;
+	}
+
+	const config = useRuntimeConfig();
+	const results = await $fetch<MMUser[]>(
+		joinURL(config.mattermost.url, `/api/v4/users/username/${username}`),
+		{
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${config.mattermost.token}`,
+			},
+		}
+	).catch((e) => {
+		if (e?.response?.status === 404) {
+			return undefined;
+		}
+
+		consola.fatal(e);
+	});
+
+	if (!results) {
+		return undefined;
+	}
+
+	if (Array.isArray(results) && !results.length) {
+		return undefined;
+	}
+
+	return results;
+}
+
+export async function getNewUsername(email: string) {
+	let username = email.split("@")[0];
+	if (!username) {
+		throw createError("Unable to obtain username from: " + email);
+	}
+
+	const exists = await getMatterMostUserByUsername(username);
+	if (!exists || !exists.length) {
+		return username;
+	}
+
+	const [name, number] = username.split("_");
+	if (number) {
+		var count = toNumber(number) + 1;
+	} else {
+		var count = 1;
+	}
+
+	username = `${name}_${count}`;
+	return getNewUsername(username);
 }
 
 export function addUserToTeam(userId: string, teamId: string) {
@@ -163,6 +218,10 @@ export async function createMattermostUser(_user: { password: string; email: str
 			body: {
 				email: _user.email,
 				password: _user.password,
+				username: await getNewUsername(_user.email).catch((e) => {
+					console.error(e);
+					return undefined;
+				}),
 			},
 			onResponseError({ response }) {
 				consola.error(response._data);

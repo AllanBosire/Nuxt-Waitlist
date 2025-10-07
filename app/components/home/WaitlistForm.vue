@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { z } from "zod/v4-mini";
+import JSConfetti from "js-confetti";
+import type { ZodError } from "zod";
 
 const token = useRouteQuery("token");
-
 const { data: count } = await useFetch("/api/count");
 const toast = useToast();
 
@@ -23,12 +24,19 @@ const { data: state, validate } = useZodState(
 );
 
 const joiningWaitlist = ref(false);
+const success = ref(false);
+
+let jsConfetti: JSConfetti | undefined;
+onMounted(() => {
+	jsConfetti = new JSConfetti();
+});
 async function joinWaitlist() {
+	state.token = token.value;
 	const { data, error } = validate();
 	if (error) {
 		toast.add({
 			title: "An error occurred",
-			description: error.issues.map((i) => i.message).join(","),
+			description: error?.issues.map((i) => i.message).join(","),
 			color: "error",
 		});
 		return;
@@ -46,12 +54,23 @@ async function joinWaitlist() {
 		});
 
 		state.email = undefined;
+		state.password = undefined;
+		jsConfetti?.addConfetti();
+		success.value = true;
+		toast.add({
+			title: "Welcome",
+			description: "You have successfully joind Finueva",
+		});
 	} catch (e: any) {
 		switch (e?.response?.status) {
 			case 400: {
 				toast.add({
-					title: e.message,
-					description: e.data.data.issues || tryParse(e.data.data.message),
+					title: "An error occurred",
+					description:
+						e.data.data.issues ||
+						tryParse<ZodError["issues"]>(e.data.data.message)
+							.map((i) => i.message)
+							.join(", "),
 					color: "error",
 				});
 				break;
@@ -76,22 +95,19 @@ const config = useAppConfig();
 
 <template>
 	<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-		<UForm :state="state" @submit="joinWaitlist">
+		<UForm :state="state" @submit.prevent="joinWaitlist">
 			<div>
 				<UFormField class="mt-2" name="email" label="Email">
-					<UInput class="w-full" v-model="state.email" placeholder="Email address" />
+					<UInput class="w-full" v-model="state.email" placeholder="Your email address" />
 				</UFormField>
 				<UFormField class="mt-2" name="password" label="Password">
 					<UInput
 						class="w-full"
 						v-model="state.password"
-						placeholder="Invite code"
+						placeholder="Create a password"
 						required
 						type="password"
 					/>
-				</UFormField>
-				<UFormField class="mt-2" name="token" label="Token" hidden>
-					<UInput class="w-full" v-model="token" placeholder="Invite code" />
 				</UFormField>
 			</div>
 			<div class="mt-6">
@@ -104,6 +120,27 @@ const config = useAppConfig();
 				</UButton>
 			</div>
 		</UForm>
+
+		<UModal :open="success" @close="success = false" title="Welcome to Finueva!">
+			<template #content>
+				<div class="p-4">
+					<p class="mt-2 text-gray-700">
+						You have successfully joined the waitlist. 🎉<br />
+						We’re excited to have you on board!
+					</p>
+					<UButton
+						class="mt-4"
+						@click="success = false"
+						color="success"
+						:link="$config.public.mmUrl"
+						:external="true"
+						icon="i-gridicons:external"
+					>
+						Visit Community
+					</UButton>
+				</div>
+			</template>
+		</UModal>
 
 		<div class="mt-4 flex gap-2 items-center justify-center">
 			<UAvatarGroup v-if="count?.count">

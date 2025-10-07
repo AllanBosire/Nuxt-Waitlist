@@ -19,8 +19,10 @@ services:
                 condition: service_healthy
         volumes:
           - videos:/uploads/videos
+          - /app/node_modules
         networks:
             - bridget
+        restart: unless-stopped
         
 
     db:

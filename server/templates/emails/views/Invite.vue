@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
 import { Tailwind, Button, Html, Text, Container } from "@vue-email/components";
 defineProps<{ inviteUrl: string; code: string }>();
 </script>

@@ -52,6 +52,7 @@ export default defineEventHandler(async (event) => {
 			});
 
 			execute(inValidateToken, token, result.user.email);
+			execute(sendInviteUpdateMessage, valid.created_by, result.user.username);
 		})
 		.catch((error) => {
 			consola.error(error);

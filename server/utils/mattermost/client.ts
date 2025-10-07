@@ -1,6 +1,7 @@
 import type { RuntimeConfig } from "nuxt/schema";
 import clients from "@mattermost/client";
 import WebSocket from "ws";
+import { consola } from "consola";
 
 type Bot = keyof RuntimeConfig["mattermost"]["bots"];
 interface BotSocket {
@@ -18,6 +19,51 @@ export type CustomBotClient = Omit<InstanceType<typeof clients.Client4>, "userId
 declare global {
 	var botSockets: Map<Bot, BotSocket> | undefined;
 	var botClients: Map<Bot, CustomBotClient> | undefined;
+}
+
+export type DMChannel = Awaited<
+	ReturnType<InstanceType<typeof clients.Client4>["createDirectChannel"]>
+>;
+export async function sendMessage(bot: CustomBotClient, dmChannel: DMChannel, message: string) {
+	const { error } = await execute(bot.createPost, {
+		channel_id: dmChannel.id,
+		message: message,
+	});
+
+	if (error) {
+		throw createError({
+			message: "Unable to create post",
+			cause: error,
+		});
+	}
+}
+
+const dms = new Map<string, DMChannel>();
+export async function getOrCreateDM(details: { bot: Bot; message?: string; user_id: string }) {
+	const bot = useMatterClient(details.bot);
+	const key = `${details.bot}-${details.user_id}`;
+	let dmChannel = dms.get(key);
+	if (!dmChannel) {
+		const { result, error: dmError } = await execute(bot.createDirectChannel, [
+			await bot.userId(),
+			details.user_id,
+		]);
+		if (dmError && !result) {
+			throw createError({
+				message: "Unable to create DM",
+				cause: dmError,
+			});
+		}
+
+		dmChannel = result;
+		dms.set(key, dmChannel);
+	}
+
+	if (details.message) {
+		sendMessage(bot, dmChannel, details.message);
+	}
+
+	return dmChannel;
 }
 
 /**
@@ -97,7 +143,7 @@ export function useMatterClient(bot: Bot) {
 				}
 			}
 
-			function tryParse(raw: string): { event?: string; data?: any } {
+			function tryParse(raw: string): { event?: string; data?: any; action?: string } {
 				try {
 					return JSON.parse(raw);
 				} catch {
@@ -109,9 +155,20 @@ export function useMatterClient(bot: Bot) {
 				const message = tryParse(raw.toString());
 				if (message.event) {
 					emit(message.event, message.data);
-				} else {
-					console.error("No message event", raw);
 				}
+
+				if (message.hasOwnProperty("seq_reply") || message.hasOwnProperty("status")) {
+					return;
+				}
+
+				if (
+					message.hasOwnProperty("action") &&
+					["ping", "pong"].includes(message.action!)
+				) {
+					return;
+				}
+
+				consola.debug("Unknown WebSocket message:", message);
 			});
 
 			ws.on("open", () => emit("open"));
@@ -136,6 +193,46 @@ export function useMatterClient(bot: Bot) {
 
 	globalThis.botClients.set(bot, _client);
 	return _client;
+}
+
+function sendTyping(bot: Bot, channel_id: string) {
+	const payload = JSON.stringify({
+		action: "user_typing",
+		channel_id,
+	});
+	const wsClient = useMatterClient(bot).getWebSocket().raw;
+	if (wsClient.readyState === WebSocket.OPEN) {
+		wsClient.send(payload);
+	} else {
+		wsClient.addEventListener("open", () => {
+			wsClient.send(payload);
+		});
+	}
+}
+
+/**
+ * Show typing indicator for the duration of a given async operation.
+ * @param bot The bot name
+ * @param channelId The Mattermost channel ID (e.g., DM or public channel)
+ * @param promise A promise (async task) to run while showing typing
+ */
+export async function showTyping<T>(bot: Bot, channelId: string, promise: Promise<T>) {
+	let typingInterval: NodeJS.Timeout | null = null;
+
+	typingInterval = setInterval(() => sendTyping(bot, channelId), 3000);
+	sendTyping(bot, channelId);
+
+	const { result, error } = await execute(promise);
+	if (typingInterval) {
+		clearInterval(typingInterval);
+		typingInterval = null;
+	}
+	if (error) {
+		consola.error(error);
+		return undefined;
+	}
+
+	return result;
 }
 
 export type MattermostEventType =
@@ -183,4 +280,3 @@ export type MattermostEventType =
 	| "thread_updated"
 	| "thread_follow_changed"
 	| "thread_read_changed";
-

@@ -51,6 +51,11 @@ export interface Markdown {
 	invite: {
 		link: string;
 	};
+	"invite-update": {
+		link: string;
+		refferral_count: number;
+		username: string;
+	};
 }
 
 /**
