@@ -9,7 +9,7 @@ const schema = z.object({
 async function checkUsername(term: string) {
 	const config = useRuntimeConfig();
 	const results = await $fetch<any[]>(
-		joinURL(config.mattermost.url, `/api/v4/users/username/${term}`),
+		joinURL(config.public.mmUrl, `/api/v4/users/username/${term}`),
 		{
 			method: "GET",
 			headers: {

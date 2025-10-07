@@ -5,7 +5,7 @@ import { consola } from "consola";
 export default defineEventHandler(async (event) => {
 	await ensureAdmin(event);
 	const config = useRuntimeConfig();
-	const target = joinURL(config.mattermost.url, event.path.replace("/mattermost", ""));
+	const target = joinURL(config.public.mmUrl, event.path.replace("/mattermost", ""));
 	return proxyRequest(event, target, {
 		headers: {
 			Authorization: `Bearer ${config.mattermost.token}`,

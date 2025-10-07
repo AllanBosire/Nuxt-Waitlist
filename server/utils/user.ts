@@ -22,7 +22,7 @@ export async function deleteUser(email: string) {
 const getMMUserFromCookie = defineCachedFunction(
 	(cookie: string) => {
 		const config = useRuntimeConfig();
-		return $fetch<MMUser | undefined>(joinURL(config.mattermost.url, "/api/v4/users/me"), {
+		return $fetch<MMUser | undefined>(joinURL(config.public.mmUrl, "/api/v4/users/me"), {
 			headers: {
 				Authorization: `Bearer ${cookie}`,
 			},

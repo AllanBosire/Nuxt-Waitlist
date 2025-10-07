@@ -4,7 +4,7 @@ import { joinURL } from "ufo";
 async function* getAllUsers(page: number = 0) {
 	const config = useRuntimeConfig();
 	while (true) {
-		const users = await $fetch<MMUser[]>(joinURL(config.mattermost.url, "/api/v4/users"), {
+		const users = await $fetch<MMUser[]>(joinURL(config.public.mmUrl, "/api/v4/users"), {
 			headers: {
 				Authorization: `Bearer ${config.mattermost.token}`,
 			},

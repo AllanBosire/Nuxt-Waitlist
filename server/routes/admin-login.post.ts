@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
 	const config = useRuntimeConfig();
 
 	const response = await $fetch
-		.raw<LoggedInUser>(joinURL(config.mattermost.url, "/api/v4/users/login"), {
+		.raw<LoggedInUser>(joinURL(config.public.mmUrl, "/api/v4/users/login"), {
 			method: "POST",
 			body: {
 				login_id: username,
@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
 		});
 	}
 
-	const hostname = import.meta.dev ? undefined : new URL(config.mattermost.url).hostname;
+	const hostname = import.meta.dev ? undefined : new URL(config.public.mmUrl).hostname;
 	setCookie(event, "MMAUTHTOKEN", mmToken, {
 		httpOnly: true,
 		secure: true,

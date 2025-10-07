@@ -47,7 +47,6 @@ export default defineNuxtConfig({
 			mmUrl: "https://chat.ifkafin.com",
 		},
 		mattermost: {
-			url: "https://chat.ifkafin.com",
 			token: "",
 			/** The default team to add the user to */
 			team_id: "",

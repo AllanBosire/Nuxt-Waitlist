@@ -92,7 +92,7 @@ export interface Timezone {
 
 export function getMatterMostUserById(id: string) {
 	const config = useRuntimeConfig();
-	return $fetch<MMUser[]>(joinURL(config.mattermost.url, "/api/v4/users/ids"), {
+	return $fetch<MMUser[]>(joinURL(config.public.mmUrl, "/api/v4/users/ids"), {
 		method: "POST",
 		headers: {
 			Authorization: `Bearer ${config.mattermost.token}`,
@@ -113,7 +113,7 @@ export function getMatterMostUserByEmail(email: string) {
 	const config = useRuntimeConfig();
 
 	return $fetch<MMUser>(
-		joinURL(config.mattermost.url, `/api/v4/users/email/${encodeURIComponent(email)}`),
+		joinURL(config.public.mmUrl, `/api/v4/users/email/${encodeURIComponent(email)}`),
 		{
 			method: "GET",
 			headers: {
@@ -134,7 +134,7 @@ export async function getMatterMostUserByUsername(username: string) {
 
 	const config = useRuntimeConfig();
 	const results = await $fetch<MMUser[]>(
-		joinURL(config.mattermost.url, `/api/v4/users/username/${username}`),
+		joinURL(config.public.mmUrl, `/api/v4/users/username/${username}`),
 		{
 			method: "GET",
 			headers: {
@@ -184,7 +184,7 @@ export async function getNewUsername(email: string) {
 
 export function addUserToTeam(userId: string, teamId: string) {
 	const config = useRuntimeConfig();
-	return $fetch(joinURL(config.mattermost.url, `/api/v4/teams/${teamId}/members`), {
+	return $fetch(joinURL(config.public.mmUrl, `/api/v4/teams/${teamId}/members`), {
 		method: "POST",
 		headers: {
 			Authorization: `Bearer ${config.mattermost.token}`,
@@ -209,7 +209,7 @@ export async function createMattermostUser(_user: { password: string; email: str
 	const config = useRuntimeConfig();
 	const token = v7();
 	const user = await $fetch<MattermostUserCreateResponse>(
-		joinURL(config.mattermost.url, "/api/v4/users"),
+		joinURL(config.public.mmUrl, "/api/v4/users"),
 		{
 			method: "POST",
 			headers: {

@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
 	const config = useRuntimeConfig();
 	const { result: user, error } = await execute(
 		event.$fetch<MMUser>,
-		joinURL(config.mattermost.url, "/api/v4/users/me"),
+		joinURL(config.public.mmUrl, "/api/v4/users/me"),
 		{
 			headers: {
 				Authorization: `Bearer ${cookie}`,

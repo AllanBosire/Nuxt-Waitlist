@@ -81,7 +81,7 @@ export default defineEventHandler(async (event) => {
 	}
 
 	const response = await $fetch.raw<LoggedInUser>(
-		joinURL(config.mattermost.url, "/api/v4/users/login"),
+		joinURL(config.public.mmUrl, "/api/v4/users/login"),
 		{
 			method: "POST",
 			headers: {
@@ -102,7 +102,7 @@ export default defineEventHandler(async (event) => {
 		});
 	}
 
-	const hostname = new URL(config.mattermost.url).hostname;
+	const hostname = new URL(config.public.mmUrl).hostname;
 
 	setCookie(event, "MMAUTHTOKEN", mmToken, {
 		httpOnly: true,
