@@ -241,6 +241,7 @@ export async function createMattermostUser(_user: { password: string; email: str
 
 	const link = createMagicLink(token, user.email);
 	sendWelcomeMessage(user.id, config.mattermost.bots.welcome.version);
+	sendInviteKnowhowMessage(user.id, config.mattermost.bots.invite.version);
 	return {
 		user,
 		link,
