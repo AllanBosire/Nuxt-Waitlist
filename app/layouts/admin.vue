@@ -15,6 +15,11 @@ const items: NavigationMenuItem[][] = [
 			to: "/admin/send-message",
 		},
 		{
+			label: "Surveys",
+			icon: "i-lets-icons:form-duotone-line",
+			to: "/admin/surveys",
+		},
+		{
 			label: "Notifications",
 			icon: "i-lucide-bell",
 		},

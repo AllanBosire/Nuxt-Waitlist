@@ -76,7 +76,8 @@ export async function useIP(event?: H3Event) {
 		});
 	}
 
-	if (typeof getRequestIP === "undefined") {
+	// @ts-expect-error
+	if (typeof globalThis.getRequestIP === "undefined") {
 		const { getRequestIP } = await import("h3");
 		var ip =
 			getRequestIP(event, {

@@ -51,6 +51,7 @@ export const invites = pgTable(
 		id: serial("id"),
 		code: varchar("code", { length: 64 }).notNull().unique(),
 		created_by: varchar("created_by", { length: 255 }).notNull(),
+		for_email: varchar("for_email", { length: 255 }).unique(),
 		used_by: varchar("used_by", { length: 255 }),
 		created_at: timestamp("created_at").defaultNow(),
 		used_at: timestamp("used_at"),

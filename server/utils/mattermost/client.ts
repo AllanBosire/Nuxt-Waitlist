@@ -3,7 +3,7 @@ import clients from "@mattermost/client";
 import WebSocket from "ws";
 import { consola } from "consola";
 
-type Bot = keyof RuntimeConfig["mattermost"]["bots"];
+export type Bot = keyof RuntimeConfig["mattermost"]["bots"];
 interface BotSocket {
 	on: JSFunction<void, [MattermostEventType, (data?: any) => void]>;
 	off: JSFunction<void, [MattermostEventType, (data?: any) => void]>;

@@ -8,21 +8,30 @@ importers:
 
   .:
     dependencies:
+      '@googlemaps/markerclusterer':
+        specifier: ^2.6.2
+        version: 2.6.2
       '@mattermost/client':
         specifier: ^10.12.0
         version: 10.12.0(@mattermost/types@10.12.0(typescript@5.7.2))(typescript@5.7.2)
       '@nuxt/image':
         specifier: ^1.11.0
         version: 1.11.0(db0@0.3.2(drizzle-orm@0.33.0(@opentelemetry/api@1.9.0)(postgres@3.4.7)))(ioredis@5.8.0)(magicast@0.3.5)
+      '@nuxt/scripts':
+        specifier: 0.12.1
+        version: 0.12.1(@googlemaps/markerclusterer@2.6.2)(@unhead/vue@2.0.17(vue@3.5.22(typescript@5.7.2)))(db0@0.3.2(drizzle-orm@0.33.0(@opentelemetry/api@1.9.0)(postgres@3.4.7)))(ioredis@5.8.0)(magicast@0.3.5)(typescript@5.7.2)(vue@3.5.22(typescript@5.7.2))
       '@nuxt/ui':
         specifier: ^4.0.0
-        version: 4.0.0(@babel/parser@7.28.4)(change-case@5.4.4)(db0@0.3.2(drizzle-orm@0.33.0(@opentelemetry/api@1.9.0)(postgres@3.4.7)))(embla-carousel@8.6.0)(ioredis@5.8.0)(magicast@0.3.5)(typescript@5.7.2)(vite@7.1.7(@types/node@24.5.2)(jiti@2.6.0)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))(vue-router@4.5.1(vue@3.5.22(typescript@5.7.2)))(vue@3.5.22(typescript@5.7.2))(zod@4.1.11)
+        version: 4.0.0(@babel/parser@7.28.4)(change-case@5.4.4)(db0@0.3.2(drizzle-orm@0.33.0(@opentelemetry/api@1.9.0)(postgres@3.4.7)))(embla-carousel@8.6.0)(ioredis@5.8.0)(magicast@0.3.5)(sortablejs@1.15.6)(typescript@5.7.2)(valibot@1.1.0(typescript@5.7.2))(vite@7.1.7(@types/node@24.5.2)(jiti@2.6.0)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))(vue-router@4.5.1(vue@3.5.22(typescript@5.7.2)))(vue@3.5.22(typescript@5.7.2))(zod@4.1.11)
       '@stefanobartoletti/nuxt-social-share':
         specifier: 1.2.1
         version: 1.2.1(magicast@0.3.5)
       '@tailwindcss/vite':
         specifier: ^4.1.13
         version: 4.1.13(vite@7.1.7(@types/node@24.5.2)(jiti@2.6.0)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))
+      '@unhead/vue':
+        specifier: ^2.0.17
+        version: 2.0.17(vue@3.5.22(typescript@5.7.2))
       '@vue-email/components':
         specifier: ^0.0.21
         version: 0.0.21(typescript@5.7.2)(vue@3.5.22(typescript@5.7.2))
@@ -95,6 +104,9 @@ importers:
       vue:
         specifier: latest
         version: 3.5.22(typescript@5.7.2)
+      vue-draggable-next:
+        specifier: ^2.3.0
+        version: 2.3.0(sortablejs@1.15.6)(vue@3.5.22(typescript@5.7.2))
       vue-router:
         specifier: latest
         version: 4.5.1(vue@3.5.22(typescript@5.7.2))
@@ -878,6 +890,9 @@ packages:
   '@floating-ui/vue@1.1.9':
     resolution: {integrity: sha512-BfNqNW6KA83Nexspgb9DZuz578R7HT8MZw1CfK9I6Ah4QReNWEJsXWHN+SdmOVLNGmTPDi+fDT535Df5PzMLbQ==}
 
+  '@googlemaps/markerclusterer@2.6.2':
+    resolution: {integrity: sha512-U6uVhq8iWhiIckA89sgRu8OK35mjd6/3CuoZKWakKEf0QmRRWpatlsPb3kqXkoWSmbcZkopRiI4dnW6DQSd7bQ==}
+
   '@iconify-json/tabler@1.2.23':
     resolution: {integrity: sha512-Knb8ykgMwB5uSoqrDv1xIdJYM03OP06OXjN6QvGXaTNtdHkW9ciKA+aftz6lwM2jwJA+bsUWeDzLBlPt2uJm4w==}
 
@@ -1018,6 +1033,28 @@ packages:
   '@nuxt/schema@4.1.2':
     resolution: {integrity: sha512-uFr13C6c52OFbF3hZVIV65KvhQRyrwp1GlAm7EVNGjebY8279QEel57T4R9UA1dn2Et6CBynBFhWoFwwo97Pig==}
     engines: {node: ^14.18.0 || >=16.10.0}
+
+  '@nuxt/scripts@0.12.1':
+    resolution: {integrity: sha512-B6h6pT0tAuScve+6opooJL9Zj45OMxaXspxtG65NhXvoT61qQhA/9Mjx1DedWJT7le6YffIvDcciKVrb6xXYYA==}
+    peerDependencies:
+      '@googlemaps/markerclusterer': ^2.6.2
+      '@paypal/paypal-js': ^8.1.2
+      '@stripe/stripe-js': ^7.0.0
+      '@types/google.maps': ^3.58.1
+      '@types/vimeo__player': ^2.18.3
+      '@types/youtube': ^0.1.0
+      '@unhead/vue': ^2.0.3
+    peerDependenciesMeta:
+      '@paypal/paypal-js':
+        optional: true
+      '@stripe/stripe-js':
+        optional: true
+      '@types/google.maps':
+        optional: true
+      '@types/vimeo__player':
+        optional: true
+      '@types/youtube':
+        optional: true
 
   '@nuxt/telemetry@2.6.6':
     resolution: {integrity: sha512-Zh4HJLjzvm3Cq9w6sfzIFyH9ozK5ePYVfCUzzUQNiZojFsI2k1QkSBrVI9BGc6ArKXj/O6rkI6w7qQ+ouL8Cag==}
@@ -1970,6 +2007,9 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
+  '@types/geojson@7946.0.16':
+    resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
+
   '@types/hast@3.0.4':
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
 
@@ -1994,6 +2034,9 @@ packages:
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
+
+  '@types/supercluster@7.1.3':
+    resolution: {integrity: sha512-Z0pOY34GDFl3Q6hUFYf3HkTwKEE02e7QgtJppBt+beEAxnyOpJua+voGFvxINBHa06GwLFFym7gRPY2SiKIfIA==}
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
@@ -3147,6 +3190,10 @@ packages:
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
+  fast-equals@5.3.2:
+    resolution: {integrity: sha512-6rxyATwPCkaFIL3JLqw8qXqMpIZ942pTX/tbQFkRsDGblS8tNGtlUauA/+mt6RUfqn/4MoEr+WDkYoIQbibWuQ==}
+    engines: {node: '>=6.0.0'}
+
   fast-fifo@1.3.2:
     resolution: {integrity: sha512-/d9sfos4yxzpwkDkuN7k2SqFKtYNmCTzgfEpz82x34IM9/zc8KGxQoXg1liNC/izpRM/MBdt44Nmx41ZWqk+FQ==}
 
@@ -3533,6 +3580,9 @@ packages:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
+
+  kdbush@4.0.2:
+    resolution: {integrity: sha512-WbCVYJ27Sz8zi9Q7Q0xHC+05iwkm3Znipc2XTlrnJbsHMYktW4hPhXUE8Ys1engBrvffoSCqbil1JQAa7clRpA==}
 
   kind-of@6.0.3:
     resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}
@@ -4569,6 +4619,9 @@ packages:
   smob@1.5.0:
     resolution: {integrity: sha512-g6T+p7QO8npa+/hNx9ohv1E5pVCmWrVCUzUXJyLdMmftX6ER0oiWY/w9knEonLpnOp6b6FenKnMfR8gqwWdwig==}
 
+  sortablejs@1.15.6:
+    resolution: {integrity: sha512-aNfiuwMEpfBM/CN6LY0ibyhxPfPbyFeBTYJKCvzkJ2GkUpazIt3H+QIPAMHwqQ7tMKaHz1Qj+rJJCqljnf4p3A==}
+
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -4662,6 +4715,9 @@ packages:
     engines: {node: ^18.12.0 || ^20.9.0 || >=22.0}
     peerDependencies:
       postcss: ^8.4.32
+
+  supercluster@8.0.1:
+    resolution: {integrity: sha512-IiOea5kJ9iqzD2t7QJq/cREyLHTtSmUT6gQsweojg9WH2sYJqZK9SswTu6jrscO6D1G5v5vYZ9ru/eq85lXeZQ==}
 
   superjson@2.2.2:
     resolution: {integrity: sha512-5JRxVqC8I8NuOUjzBbvVJAKNM8qoVuH0O77h4WInc/qC2q5IreqKxYwgkga3PfA22OayK2ikceb/B26dztPl+Q==}
@@ -4999,6 +5055,14 @@ packages:
     resolution: {integrity: sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==}
     hasBin: true
 
+  valibot@1.1.0:
+    resolution: {integrity: sha512-Nk8lX30Qhu+9txPYTwM0cFlWLdPFsFr6LblzqIySfbZph9+BFsAHsNvHOymEviUepeIW6KFHzpX8TKhbptBXXw==}
+    peerDependencies:
+      typescript: '>=5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   vaul-vue@0.4.1:
     resolution: {integrity: sha512-A6jOWOZX5yvyo1qMn7IveoWN91mJI5L3BUKsIwkg6qrTGgHs1Sb1JF/vyLJgnbN1rH4OOOxFbtqL9A46bOyGUQ==}
     peerDependencies:
@@ -5138,6 +5202,12 @@ packages:
 
   vue-devtools-stub@0.1.0:
     resolution: {integrity: sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ==}
+
+  vue-draggable-next@2.3.0:
+    resolution: {integrity: sha512-ymbY0UIwfSdg0iDN/iyNNwUrTqZ/6KbPryzsvTNXBLuDCuOBdNijSK8yynNtmiSj6RapTPQfjLGQdJrZkzBd2w==}
+    peerDependencies:
+      sortablejs: ^1.14.0
+      vue: ^3.5.17
 
   vue-echarts@8.0.0:
     resolution: {integrity: sha512-tf8KadYTOBukRVJBYChdust4UYTa85lh/d41EmQt3FwP+p65s+Pn9s23/9HKjWnRuTZa6FxL/JgGNFsHBfV5Eg==}
@@ -6123,6 +6193,12 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
+  '@googlemaps/markerclusterer@2.6.2':
+    dependencies:
+      '@types/supercluster': 7.1.3
+      fast-equals: 5.3.2
+      supercluster: 8.0.1
+
   '@iconify-json/tabler@1.2.23':
     dependencies:
       '@iconify/types': 2.0.0
@@ -6512,6 +6588,50 @@ snapshots:
       std-env: 3.9.0
       ufo: 1.6.1
 
+  '@nuxt/scripts@0.12.1(@googlemaps/markerclusterer@2.6.2)(@unhead/vue@2.0.17(vue@3.5.22(typescript@5.7.2)))(db0@0.3.2(drizzle-orm@0.33.0(@opentelemetry/api@1.9.0)(postgres@3.4.7)))(ioredis@5.8.0)(magicast@0.3.5)(typescript@5.7.2)(vue@3.5.22(typescript@5.7.2))':
+    dependencies:
+      '@googlemaps/markerclusterer': 2.6.2
+      '@nuxt/kit': 4.1.2(magicast@0.3.5)
+      '@unhead/vue': 2.0.17(vue@3.5.22(typescript@5.7.2))
+      '@vueuse/core': 13.9.0(vue@3.5.22(typescript@5.7.2))
+      consola: 3.4.2
+      defu: 6.1.4
+      h3: 1.15.4
+      magic-string: 0.30.19
+      ofetch: 1.4.1
+      ohash: 2.0.11
+      pathe: 2.0.3
+      pkg-types: 2.3.0
+      sirv: 3.0.2
+      std-env: 3.9.0
+      ufo: 1.6.1
+      unplugin: 2.3.10
+      unstorage: 1.17.1(db0@0.3.2(drizzle-orm@0.33.0(@opentelemetry/api@1.9.0)(postgres@3.4.7)))(ioredis@5.8.0)
+      valibot: 1.1.0(typescript@5.7.2)
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@deno/kv'
+      - '@netlify/blobs'
+      - '@planetscale/database'
+      - '@upstash/redis'
+      - '@vercel/blob'
+      - '@vercel/functions'
+      - '@vercel/kv'
+      - aws4fetch
+      - db0
+      - idb-keyval
+      - ioredis
+      - magicast
+      - typescript
+      - uploadthing
+      - vue
+
   '@nuxt/telemetry@2.6.6(magicast@0.3.5)':
     dependencies:
       '@nuxt/kit': 3.19.2(magicast@0.3.5)
@@ -6529,7 +6649,7 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  '@nuxt/ui@4.0.0(@babel/parser@7.28.4)(change-case@5.4.4)(db0@0.3.2(drizzle-orm@0.33.0(@opentelemetry/api@1.9.0)(postgres@3.4.7)))(embla-carousel@8.6.0)(ioredis@5.8.0)(magicast@0.3.5)(typescript@5.7.2)(vite@7.1.7(@types/node@24.5.2)(jiti@2.6.0)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))(vue-router@4.5.1(vue@3.5.22(typescript@5.7.2)))(vue@3.5.22(typescript@5.7.2))(zod@4.1.11)':
+  '@nuxt/ui@4.0.0(@babel/parser@7.28.4)(change-case@5.4.4)(db0@0.3.2(drizzle-orm@0.33.0(@opentelemetry/api@1.9.0)(postgres@3.4.7)))(embla-carousel@8.6.0)(ioredis@5.8.0)(magicast@0.3.5)(sortablejs@1.15.6)(typescript@5.7.2)(valibot@1.1.0(typescript@5.7.2))(vite@7.1.7(@types/node@24.5.2)(jiti@2.6.0)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.1))(vue-router@4.5.1(vue@3.5.22(typescript@5.7.2)))(vue@3.5.22(typescript@5.7.2))(zod@4.1.11)':
     dependencies:
       '@ai-sdk/vue': 2.0.54(vue@3.5.22(typescript@5.7.2))(zod@4.1.11)
       '@iconify/vue': 5.0.0(vue@3.5.22(typescript@5.7.2))
@@ -6546,7 +6666,7 @@ snapshots:
       '@tanstack/vue-table': 8.21.3(vue@3.5.22(typescript@5.7.2))
       '@unhead/vue': 2.0.17(vue@3.5.22(typescript@5.7.2))
       '@vueuse/core': 13.9.0(vue@3.5.22(typescript@5.7.2))
-      '@vueuse/integrations': 13.9.0(change-case@5.4.4)(fuse.js@7.1.0)(vue@3.5.22(typescript@5.7.2))
+      '@vueuse/integrations': 13.9.0(change-case@5.4.4)(fuse.js@7.1.0)(sortablejs@1.15.6)(vue@3.5.22(typescript@5.7.2))
       colortranslator: 5.0.0
       consola: 3.4.2
       defu: 6.1.4
@@ -6578,6 +6698,7 @@ snapshots:
       vaul-vue: 0.4.1(reka-ui@2.5.0(typescript@5.7.2)(vue@3.5.22(typescript@5.7.2)))(vue@3.5.22(typescript@5.7.2))
       vue-component-type-helpers: 3.0.8
     optionalDependencies:
+      valibot: 1.1.0(typescript@5.7.2)
       vue-router: 4.5.1(vue@3.5.22(typescript@5.7.2))
       zod: 4.1.11
     transitivePeerDependencies:
@@ -7490,6 +7611,8 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
+  '@types/geojson@7946.0.16': {}
+
   '@types/hast@3.0.4':
     dependencies:
       '@types/unist': 3.0.3
@@ -7518,6 +7641,10 @@ snapshots:
       parse-path: 7.1.0
 
   '@types/resolve@1.20.2': {}
+
+  '@types/supercluster@7.1.3':
+    dependencies:
+      '@types/geojson': 7946.0.16
 
   '@types/unist@2.0.11': {}
 
@@ -7864,7 +7991,7 @@ snapshots:
       '@vueuse/shared': 13.9.0(vue@3.5.22(typescript@5.7.2))
       vue: 3.5.22(typescript@5.7.2)
 
-  '@vueuse/integrations@13.9.0(change-case@5.4.4)(fuse.js@7.1.0)(vue@3.5.22(typescript@5.7.2))':
+  '@vueuse/integrations@13.9.0(change-case@5.4.4)(fuse.js@7.1.0)(sortablejs@1.15.6)(vue@3.5.22(typescript@5.7.2))':
     dependencies:
       '@vueuse/core': 13.9.0(vue@3.5.22(typescript@5.7.2))
       '@vueuse/shared': 13.9.0(vue@3.5.22(typescript@5.7.2))
@@ -7872,6 +7999,7 @@ snapshots:
     optionalDependencies:
       change-case: 5.4.4
       fuse.js: 7.1.0
+      sortablejs: 1.15.6
 
   '@vueuse/metadata@10.11.1': {}
 
@@ -8683,6 +8811,8 @@ snapshots:
 
   fast-deep-equal@3.1.3: {}
 
+  fast-equals@5.3.2: {}
+
   fast-fifo@1.3.2: {}
 
   fast-glob@3.3.3:
@@ -9114,6 +9244,8 @@ snapshots:
   json-schema@0.4.0: {}
 
   json5@2.2.3: {}
+
+  kdbush@4.0.2: {}
 
   kind-of@6.0.3: {}
 
@@ -10569,6 +10701,8 @@ snapshots:
 
   smob@1.5.0: {}
 
+  sortablejs@1.15.6: {}
+
   source-map-js@1.2.1: {}
 
   source-map-support@0.5.21:
@@ -10655,6 +10789,10 @@ snapshots:
       browserslist: 4.26.2
       postcss: 8.5.6
       postcss-selector-parser: 7.1.0
+
+  supercluster@8.0.1:
+    dependencies:
+      kdbush: 4.0.2
 
   superjson@2.2.2:
     dependencies:
@@ -11037,6 +11175,10 @@ snapshots:
 
   uuid@13.0.0: {}
 
+  valibot@1.1.0(typescript@5.7.2):
+    optionalDependencies:
+      typescript: 5.7.2
+
   vaul-vue@0.4.1(reka-ui@2.5.0(typescript@5.7.2)(vue@3.5.22(typescript@5.7.2)))(vue@3.5.22(typescript@5.7.2)):
     dependencies:
       '@vueuse/core': 10.11.1(vue@3.5.22(typescript@5.7.2))
@@ -11157,6 +11299,11 @@ snapshots:
       vue: 3.5.22(typescript@5.7.2)
 
   vue-devtools-stub@0.1.0: {}
+
+  vue-draggable-next@2.3.0(sortablejs@1.15.6)(vue@3.5.22(typescript@5.7.2)):
+    dependencies:
+      sortablejs: 1.15.6
+      vue: 3.5.22(typescript@5.7.2)
 
   vue-echarts@8.0.0(echarts@6.0.0)(vue@3.5.22(typescript@5.7.2)):
     dependencies:

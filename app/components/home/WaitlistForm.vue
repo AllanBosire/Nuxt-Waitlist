@@ -7,11 +7,18 @@ const token = useRouteQuery("token");
 const { data: count } = await useFetch("/api/count");
 const toast = useToast();
 
+const { data: invite } = await useFetch("/api/validate-invite", {
+	method: "POST",
+	body: {
+		secret: token,
+	},
+});
 const { data: state, validate } = useZodState(
 	z.object({
 		email: z.email("Invalid email"),
 		username: z.optional(z.string().check(z.minLength(4))),
-		password: z.string(),
+		password1: z.string(),
+		password2: z.string(),
 		token: z.any().check(
 			z.refine((token) => {
 				if (token) {
@@ -20,9 +27,22 @@ const { data: state, validate } = useZodState(
 				return false;
 			}, "We were not able to obtain your invite token your link may be invalid; it's invite only")
 		),
-	})
+	}).check(z.superRefine(({password1, password2}, ctx) => {
+		if(password1 !== password2) {
+			ctx.addIssue({
+				path: ["password2"],
+				message: "Passwords do not match",
+				code: "custom"
+			})
+		}
+	}))
 );
 
+watch(invite, () => {
+	state.email = invite.value?.for_email || undefined
+}, {
+	immediate: true
+})
 const joiningWaitlist = ref(false);
 const success = ref(false);
 
@@ -49,7 +69,7 @@ async function joinWaitlist() {
 			body: {
 				email: data.email,
 				token: data.token,
-				password: data.password,
+				password: data.password2,
 			},
 		});
 
@@ -98,15 +118,33 @@ const config = useAppConfig();
 		<UForm :state="state" @submit.prevent="joinWaitlist">
 			<div>
 				<UFormField class="mt-2" name="email" label="Email">
-					<UInput class="w-full" v-model="state.email" placeholder="Your email address" />
+					<UInput
+						class="w-full"
+						v-model="state.email"
+						placeholder="Your email address"
+						:default-value="invite?.for_email"
+						:disabled="invite?.for_email ? true : false"
+						autocomplete="email"
+					/>
 				</UFormField>
 				<UFormField class="mt-2" name="password" label="Password">
 					<UInput
 						class="w-full"
-						v-model="state.password"
+						v-model="state.password1"
 						placeholder="Create a password"
 						required
 						type="password"
+						autocomplete="new-password"
+					/>
+				</UFormField>
+				<UFormField class="mt-2" name="password" label="Password">
+					<UInput
+						class="w-full"
+						v-model="state.password2"
+						placeholder="Confirm your password"
+						required
+						type="password"
+						autocomplete="new-password"
 					/>
 				</UFormField>
 			</div>
@@ -132,7 +170,7 @@ const config = useAppConfig();
 						class="mt-4"
 						@click="success = false"
 						color="success"
-						:link="$config.public.mmUrl"
+						:to="$config.public.mmUrl"
 						:external="true"
 						icon="i-gridicons:external"
 					>

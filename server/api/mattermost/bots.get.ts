@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
 
 	const config = useRuntimeConfig();
 
-	return Object.entries(config.mattermost.bots).map(([id, bot]) => ({
+	return Object.entries(config.mattermost.bots).map(([id]) => ({
 		id,
 		label: capitalize(id),
 	}));

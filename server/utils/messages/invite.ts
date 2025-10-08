@@ -22,7 +22,7 @@ export function getInviteUpdateBotMessage(
 	username: string
 ) {
 	const link = getInviteLink(token);
-	return getMarkdown("invite-update", {
+	return getMarkdown("user-joined", {
 		link,
 		refferral_count,
 		username,
@@ -37,7 +37,7 @@ export async function sendInviteUpdateMessage(inviter_user_id: string, invitee_u
 
 	const bot = useMatterClient("invite");
 
-	const token = createInviteToken(inviter_user_id);
+	const token = createInviteToken(inviter_user_id, null);
 	const { result: dmChannel, error: dmError } = await execute(bot.createDirectChannel, [
 		await bot.userId(),
 		inviter_user_id,
@@ -80,7 +80,7 @@ export async function sendInviteKnowhowMessage(inviter_user_id: string, version:
 
 	const bot = useMatterClient("invite");
 
-	const token = createInviteToken(inviter_user_id);
+	const token = createInviteToken(inviter_user_id, null);
 	const { result: dmChannel, error: dmError } = await execute(bot.createDirectChannel, [
 		await bot.userId(),
 		inviter_user_id,
@@ -131,7 +131,7 @@ export async function sendInviteEmail(inviter_user_id: string, invitee_email: st
 		throw createError("Unable to obtain mattermost user as invitor: " + inviter_user_id);
 	}
 
-	const code = createInviteToken(inviter_user_id);
+	const code = createInviteToken(inviter_user_id, invitee_email);
 	const inviteUrl = getInviteLink(code);
 
 	const html = await render(Invite, { inviteUrl, code });

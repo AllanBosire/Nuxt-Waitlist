@@ -12,6 +12,7 @@ export default defineNuxtConfig({
 		"@nuxt/image",
 		"@stefanobartoletti/nuxt-social-share",
 		"nuxt-echarts",
+		"@nuxt/scripts",
 	],
 	security: {
 		headers: {
@@ -60,6 +61,9 @@ export default defineNuxtConfig({
 					token: "",
 				},
 				notifications: {
+					token: "",
+				},
+				surveys: {
 					token: "",
 				},
 			},

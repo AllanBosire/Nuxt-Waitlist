@@ -1,4 +1,3 @@
-import { defineEventHandler, readBody } from "h3";
 import db from "../database/index";
 import { useIP } from "../utils/location";
 import { consola } from "consola";

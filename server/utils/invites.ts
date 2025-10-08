@@ -1,13 +1,14 @@
 import { consola } from "consola";
 import { v7 } from "uuid";
 
-export function createInviteToken(user_id: string) {
+export function createInviteToken(user_id: string, for_email: string | null) {
 	const token = v7();
 	useDrizzle()
 		.insert(tables.invites)
 		.values({
 			code: token,
 			created_by: user_id,
+			for_email: for_email,
 		})
 		.execute()
 		.catch((e) => {
@@ -40,10 +41,4 @@ export function inValidateToken(token: string, used_by: string) {
 			is_active: false,
 		})
 		.where(eq(tables.invites.code, token));
-}
-
-
-
-export function postInviteeJoin(user_id: string, invitee_emal: string) {
-	sendInviteKnowhowMessage;
 }

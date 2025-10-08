@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
 	consola.info(`User ${user.email} is now on waitlist...`);
 	setCookie(event, "waitlistEmail", user.email, {
 		httpOnly: false,
-		maxAge: 60 * 60 * 24 * 30, // 30 days
+		maxAge: 60 * 60 * 24 * 30,
 	});
 	return user;
 });

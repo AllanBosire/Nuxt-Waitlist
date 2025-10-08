@@ -1,8 +1,11 @@
 import { consola } from "consola";
 
 export function getWelcomeBotMessage(user: MMUser) {
+	const token = createInviteToken(user.id, null);
+	const referral_url = getInviteLink(token);
 	return getMarkdown("welcome", {
 		username: user.username,
+		referral_url,
 	});
 }
 

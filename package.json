@@ -12,11 +12,14 @@
     "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "@googlemaps/markerclusterer": "^2.6.2",
     "@mattermost/client": "^10.12.0",
     "@nuxt/image": "^1.11.0",
+    "@nuxt/scripts": "0.12.1",
     "@nuxt/ui": "^4.0.0",
     "@stefanobartoletti/nuxt-social-share": "1.2.1",
     "@tailwindcss/vite": "^4.1.13",
+    "@unhead/vue": "^2.0.17",
     "@vue-email/components": "^0.0.21",
     "@vue-email/render": "^0.0.9",
     "@vueuse/core": "^12.8.2",
@@ -41,6 +44,7 @@
     "unified": "^11.0.5",
     "uuid": "^13.0.0",
     "vue": "latest",
+    "vue-draggable-next": "^2.3.0",
     "vue-router": "latest",
     "ws": "^8.18.3",
     "zod": "^4.1.11"

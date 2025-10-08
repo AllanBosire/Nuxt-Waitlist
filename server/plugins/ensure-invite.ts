@@ -59,23 +59,40 @@ export default defineEventHandler(async () => {
 
 		const emails = String(message).matchAll(emailRegex);
 		emails.forEach(async ([email]) => {
+			const { markdown: invitingMessage } = await getMarkdown("sending-invite", {
+				email,
+			});
 			const dm = await getOrCreateDM({
 				bot: "invite",
 				user_id,
-				message: "Sending invite to: " + email,
+				message: invitingMessage,
 			});
-			showTyping(
+			const url = await showTyping(
 				"invite",
 				dm.id,
 				(async function () {
 					const url = await sendInviteEmail(user_id, email);
-					await getOrCreateDM({
-						bot: "invite",
-						user_id,
-						message: "Sent user invite to: " + email + " URL: " + url,
-					});
+					// sleeep for 3 seconds
+					await new Promise((resolve) => setTimeout(resolve, 3000));
+					return url;
 				})()
 			);
+
+			if (!url) {
+				consola.warn("There seems to have been an error of some kind");
+				return;
+			}
+
+			const { markdown: sentMessage } = await getMarkdown("invite-sent", {
+				email,
+				url,
+			});
+
+			getOrCreateDM({
+				bot: "invite",
+				user_id,
+				message: sentMessage,
+			});
 		});
 	});
 });

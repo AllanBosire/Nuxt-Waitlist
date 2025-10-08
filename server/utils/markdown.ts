@@ -47,14 +47,22 @@ export async function getMarkdown<K extends keyof Markdown>(
 export interface Markdown {
 	welcome: {
 		username: string;
+		referral_url: string;
 	};
 	invite: {
 		link: string;
 	};
-	"invite-update": {
+	"user-joined": {
 		link: string;
 		refferral_count: number;
 		username: string;
+	};
+	"sending-invite": {
+		email: string;
+	};
+	"invite-sent": {
+		email: string;
+		url: string;
 	};
 }
 
