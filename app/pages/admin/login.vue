@@ -22,8 +22,6 @@ import { z } from "zod";
 import { consola } from "consola";
 const toast = useToast();
 
-const router = useRouter();
-
 const schema = z.object({
 	username: z.string().min(1),
 	password: z.string().min(1),
@@ -53,6 +51,6 @@ async function onSubmit() {
 		title: "Login Successful",
 		color: "success",
 	});
-	router.push("/admin/analytics");
+	navigateTo("/admin/analytics");
 }
 </script>
