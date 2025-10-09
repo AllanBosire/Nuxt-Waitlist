@@ -69,3 +69,28 @@ export async function ensureAdmin(event: H3Event) {
 
 	return user;
 }
+
+export async function* getAllUsers(page: number = 0) {
+	const config = useRuntimeConfig();
+	while (true) {
+		const users = await $fetch<MMUser[]>(joinURL(config.public.mmUrl, "/api/v4/users"), {
+			headers: {
+				Authorization: `Bearer ${config.mattermost.token}`,
+			},
+			query: {
+				page,
+				active: true,
+			},
+		}).catch((e) => {
+			consola.fatal(e);
+			return undefined;
+		});
+
+		if (!users || !users.length) {
+			break;
+		}
+
+		yield users;
+		page = page + 1;
+	}
+}

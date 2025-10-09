@@ -74,10 +74,7 @@ export default defineEventHandler(async (event) => {
 
 	const config = useRuntimeConfig();
 	if (!user.pswd) {
-		throw createError({
-			statusCode: 500,
-			message: "It seems a duck has been found",
-		});
+		return sendRedirect(event, config.public.mmUrl || config.public.appUrl || "/");
 	}
 
 	const response = await $fetch.raw<LoggedInUser>(

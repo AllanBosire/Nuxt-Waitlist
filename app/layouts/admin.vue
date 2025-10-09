@@ -11,13 +11,18 @@ const items: NavigationMenuItem[][] = [
 		},
 		{
 			label: "Broadcast",
-			icon: "i-heroicons-chat-bubble-left-right",
+			icon: "i-lucide-megaphone",
 			to: "/admin/send-message",
 		},
 		{
 			label: "Surveys",
-			icon: "i-lets-icons:form-duotone-line",
+			icon: "i-lucide-sticky-note",
 			to: "/admin/surveys",
+		},
+		{
+			label: "Channels",
+			icon: "i-heroicons-chat-bubble-left-right",
+			to: "/admin/channels"
 		},
 		{
 			label: "Notifications",

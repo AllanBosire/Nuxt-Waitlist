@@ -266,7 +266,7 @@
 					</div>
 				</template>
 
-				<SurveyAnalytics
+				<AdminSurveyAnalytics
 					v-if="selectedSurvey"
 					:key="selectedSurvey.id"
 					:parent-post-id="selectedSurvey.parentPostId"
@@ -341,6 +341,11 @@
 
 <script setup lang="ts">
 import type { TableColumn } from "@nuxt/ui";
+
+definePageMeta({
+	middleware: "admin",
+	layout: "admin",
+});
 
 // Types
 interface Survey {
