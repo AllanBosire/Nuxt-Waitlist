@@ -95,8 +95,9 @@ export async function* getAllUsers(page: number = 0) {
 	}
 }
 
-export function addUsersToMMChannel(user_ids: string[] | string, channelID: string) {
+export async function addUsersToMMChannel(user_ids: string[] | string, channelID: string) {
 	const config = useRuntimeConfig();
+	await new Promise((resolve) => setTimeout(resolve, 3000));
 	return $fetch(joinURL(config.public.mmUrl, "api/v4/channels/", channelID, "/members"), {
 		method: "POST",
 		headers: {
