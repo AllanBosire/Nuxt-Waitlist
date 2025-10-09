@@ -1,7 +1,7 @@
 import { consola } from "consola";
-export function logout() {
+export async function logout() {
 	const toast = useToast();
-	$fetch("/logout")
+	await $fetch("/logout")
 		.then(() => {
 			toast.add({
 				title: "Logged out successfully",
@@ -15,4 +15,6 @@ export function logout() {
 				color: "error",
 			});
 		});
+	useCookie("MMAUTHTOKEN").value = "";
+	navigateTo("/admin/login");
 }

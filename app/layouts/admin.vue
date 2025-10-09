@@ -22,7 +22,7 @@ const items: NavigationMenuItem[][] = [
 		{
 			label: "Channels",
 			icon: "i-heroicons-chat-bubble-left-right",
-			to: "/admin/channels"
+			to: "/admin/channels",
 		},
 		{
 			label: "Notifications",
@@ -39,8 +39,8 @@ const items: NavigationMenuItem[][] = [
 		{
 			label: "Logout",
 			icon: "i-heroicons-arrow-left-on-rectangle",
-			onSelect(e) {
-				console.log(e);
+			onSelect() {
+				logout();
 			},
 			as: "button",
 			class: "text-amber-500",

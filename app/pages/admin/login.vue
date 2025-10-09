@@ -33,10 +33,11 @@ const state = ref({
 });
 
 async function onSubmit() {
-	const { error } = await execute(
+	const { error, result } = await execute(
 		$fetch("/admin-login", {
 			method: "POST",
 			body: state.value,
+			credentials: "include",
 		})
 	);
 	if (error) {
@@ -47,10 +48,15 @@ async function onSubmit() {
 		});
 		return;
 	}
+	const cookie = useCookie("MMAUTHTOKEN");
+	if (!cookie.value) {
+		cookie.value = result;
+	}
+
 	toast.add({
 		title: "Login Successful",
 		color: "success",
 	});
-	navigateTo("/admin/analytics");
+	await navigateTo("/admin/analytics");
 }
 </script>

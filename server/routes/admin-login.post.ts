@@ -58,4 +58,6 @@ export default defineEventHandler(async (event) => {
 		path: "/",
 		domain: hostname ? `${hostname.split(".").slice(-2).join(".")}` : undefined,
 	});
+
+	return mmToken;
 });
