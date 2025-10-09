@@ -69,6 +69,7 @@ export default defineNuxtConfig({
 			},
 			/** comma separated admin emails */
 			admins: "",
+			public_channel_ids: "",
 		},
 		jellyfin: {
 			apiKey: "",

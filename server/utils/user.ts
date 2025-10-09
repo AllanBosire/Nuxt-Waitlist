@@ -94,3 +94,16 @@ export async function* getAllUsers(page: number = 0) {
 		page = page + 1;
 	}
 }
+
+export function addUsersToMMChannel(user_ids: string[] | string, channelID: string) {
+	const config = useRuntimeConfig();
+	return $fetch(joinURL(config.public.mmUrl, "api/v4/channels/", channelID, "/members"), {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${config.mattermost.token}`,
+		},
+		body: {
+			user_ids: Array.isArray(user_ids) ? user_ids : [user_ids],
+		},
+	});
+}

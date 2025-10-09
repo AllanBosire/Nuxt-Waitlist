@@ -239,6 +239,16 @@ export async function createMattermostUser(_user: { password: string; email: str
 		consola.fatal("Could not add mattermost user to finueva team");
 	});
 
+	const publicChannels = config.mattermost.public_channel_ids.split(",").filter(Boolean);
+	for (const channel of publicChannels) {
+		execute(addUsersToMMChannel, [user.id], channel).then(({ error }) => {
+			if (error) {
+				consola.warn("Unable to add user to channel", user.id);
+				consola.fatal(error);
+			}
+		});
+	}
+
 	const link = createMagicLink(token, user.email);
 	sendWelcomeMessage(user.id, config.mattermost.bots.welcome.version);
 	sendInviteKnowhowMessage(user.id, config.mattermost.bots.invite.version);

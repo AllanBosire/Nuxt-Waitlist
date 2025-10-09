@@ -24,19 +24,6 @@ export interface Channel {
 	creator_id: string;
 }
 
-function addUsersToMMChannel(user_ids: string[] | string, channelID: string) {
-	const config = useRuntimeConfig();
-	return $fetch(joinURL(config.public.mmUrl, "api/v4/channels/", channelID, "/members"), {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${config.mattermost.token}`,
-		},
-		body: {
-			user_ids: Array.isArray(user_ids) ? user_ids : [user_ids],
-		},
-	});
-}
-
 export default defineEventHandler(async (event) => {
 	await ensureAdmin(event);
 	const { channelID } = await readValidatedBody(event, schema.parse);
