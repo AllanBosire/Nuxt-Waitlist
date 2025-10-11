@@ -57,7 +57,7 @@ export default defineEventHandler(async () => {
 			consola.info("Bot received message", message);
 		}
 
-		const emails = String(message).matchAll(emailRegex);
+		const emails = String(message).matchAll(new RegExp(emailRegex, "i"));
 		emails.forEach(async ([email]) => {
 			const { markdown: invitingMessage } = await getMarkdown("sending-invite", {
 				email,
