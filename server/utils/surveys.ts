@@ -3,6 +3,7 @@ import * as z from "zod/mini";
 export const SurveyQuestion = z.object({
 	question: z.string(),
 	choices: z.array(z.string()),
+	choice: z.optional(z.number()),
 });
 
 export const SurveyDescription = z.array(z.string());
