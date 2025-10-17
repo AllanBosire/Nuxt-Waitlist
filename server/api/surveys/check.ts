@@ -5,6 +5,17 @@ const schema = z.object({
 	version: z.string(),
 });
 export default defineEventHandler(async (event) => {
+	const handle = handleCors(event, {
+		origin: "*",
+		methods: "*",
+		preflight: {
+			statusCode: 204,
+		},
+		allowHeaders: "*",
+	});
+	if (handle) {
+		return "OK";
+	}
 	const { user_id, version } = await getValidatedQuery(event, schema.parse);
 	const data = await useDrizzle().query.surveys.findFirst({
 		where(fields, operators) {
@@ -18,7 +29,7 @@ export default defineEventHandler(async (event) => {
 	if (!data) {
 		throw createError({
 			message: "No user data found",
-			statusCode: 404,
+			statusCode: 410,
 		});
 	}
 

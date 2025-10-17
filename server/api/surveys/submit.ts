@@ -1,4 +1,15 @@
 export default defineEventHandler(async (event) => {
+	const handle = handleCors(event, {
+		origin: "*",
+		methods: ["OPTIONS", "POST"],
+		preflight: {
+			statusCode: 204,
+		},
+		allowHeaders: "*",
+	});
+	if (handle) {
+		return "OK";
+	}
 	const host = getRequestHost(event);
 	const body = await readBody(event);
 
