@@ -96,89 +96,121 @@ export function useMatterClient(bot: Bot) {
 			return client.userId;
 		},
 		getWebSocket() {
-			if (!globalThis.botSockets) {
-				globalThis.botSockets = new Map();
-			}
+			if (!globalThis.botSockets) globalThis.botSockets = new Map();
 
 			const existing = globalThis.botSockets.get(bot);
-			if (existing) {
-				return existing;
-			}
+			if (existing) return existing;
 
 			const url = this.getWebSocketUrl();
-
-			const ws = new WebSocket(url, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
 			const listeners = new Map<string, Set<(data?: any) => void>>();
 
-			function on(event: string, callback: JSFunction): () => void {
-				if (!listeners.has(event)) {
-					listeners.set(event, new Set());
-				}
-				listeners.get(event)!.add(callback);
-				return () => off(event, callback);
-			}
+			const connect = (): WebSocket => {
+				const ws = new WebSocket(url, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
 
-			function off(event: string, callback: JSFunction): void {
-				if (listeners.has(event)) {
-					listeners.get(event)!.delete(callback);
-					if (listeners.get(event)!.size === 0) {
-						listeners.delete(event);
+				ws.on("message", (raw) => {
+					const message = tryParse<{ event?: string; data?: any; action?: string }>(
+						raw.toString()
+					);
+
+					if (message.event) {
+						emit(message.event, message.data);
 					}
-				}
-			}
+					if (message.hasOwnProperty("seq_reply") || message.hasOwnProperty("status")) {
+						return;
+					}
+					if (
+						message.hasOwnProperty("action") &&
+						["ping", "pong"].includes(message.action!)
+					) {
+						return;
+					}
+					consola.debug("Unknown WebSocket message:", message);
+				});
 
-			function emit(event: string, data?: any): void {
+				ws.on("open", () => {
+					consola.success(`WebSocket opened for bot ${bot}`);
+					emit("open");
+				});
+
+				ws.on("error", (err) => emit("error", err));
+
+				ws.on("close", (code, reason) => {
+					consola.warn(
+						`WebSocket closed for bot ${bot} (code: ${code}, reason: ${reason})`
+					);
+					reconnect();
+				});
+
+				return ws;
+			};
+
+			const emit = (event: string, data?: any) => {
 				if (listeners.has(event)) {
 					for (const cb of listeners.get(event)!) {
 						try {
 							cb(data);
 						} catch (err) {
-							console.error(`Error in listener for event '${event}':`, err);
+							consola.error(`Error in listener '${event}':`, err);
 						}
 					}
 				}
+			};
+
+			const on = (event: string, callback: (data?: any) => void) => {
+				if (!listeners.has(event)) listeners.set(event, new Set());
+				listeners.get(event)!.add(callback);
+				return () => off(event, callback);
+			};
+
+			const off = (event: string, callback: (data?: any) => void) => {
+				listeners.get(event)?.delete(callback);
+				if (listeners.get(event)?.size === 0) listeners.delete(event);
+			};
+
+			let ws = connect();
+
+			// ---- Reconnection logic with persistent listeners ----
+			function reconnect() {
+				let retries = 0;
+				const maxRetries = 10;
+				const retryInterval = 5000;
+
+				const tryReconnect = () => {
+					if (retries >= maxRetries) {
+						consola.error(`Bot ${bot} failed to reconnect after ${maxRetries} tries.`);
+						sendEmergencyEmailToDev(bot, "WebSocket failed to reconnect");
+						return;
+					}
+
+					retries++;
+					consola.info(
+						`Reconnecting WebSocket for bot ${bot} (attempt ${retries}/${maxRetries})...`
+					);
+
+					const newWs = connect();
+
+					newWs.once("open", () => {
+						consola.success(
+							`Bot ${bot} reconnected successfully after ${retries} tries.`
+						);
+						ws = newWs;
+						globalThis.botSockets?.set(bot, socket);
+					});
+
+					newWs.once("error", () => {
+						setTimeout(tryReconnect, retryInterval);
+					});
+				};
+
+				setTimeout(tryReconnect, retryInterval);
 			}
-
-			function tryParse(raw: string): { event?: string; data?: any; action?: string } {
-				try {
-					return JSON.parse(raw);
-				} catch {
-					return {};
-				}
-			}
-
-			ws.on("message", (raw: WebSocket.Data) => {
-				const message = tryParse(raw.toString());
-				if (message.event) {
-					emit(message.event, message.data);
-				}
-
-				if (message.hasOwnProperty("seq_reply") || message.hasOwnProperty("status")) {
-					return;
-				}
-
-				if (
-					message.hasOwnProperty("action") &&
-					["ping", "pong"].includes(message.action!)
-				) {
-					return;
-				}
-
-				consola.debug("Unknown WebSocket message:", message);
-			});
-
-			ws.on("open", () => emit("open"));
-			ws.on("close", () => emit("close"));
-			ws.on("error", (err: Error) => emit("error", err));
 
 			const socket = {
 				on,
 				off,
-				close: ws.close,
+				close: () => ws.close(),
 				raw: ws,
 			};
 

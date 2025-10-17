@@ -81,6 +81,9 @@ export default defineNuxtConfig({
 			host: "",
 			port: 587,
 		},
+		dev: {
+			email: "",
+		},
 	},
 	vite: {
 		plugins: [tailwindcss()],

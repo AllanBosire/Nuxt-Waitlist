@@ -1,16 +1,24 @@
-import { z } from "zod/v4-mini";
+import * as z from "zod/mini";
 
-export const Question = z.object({
+export const SurveyQuestion = z.object({
 	question: z.string(),
 	choices: z.array(z.string()),
-	choice: z.union([z.string(), z.number(), z.null()]),
 });
 
-export const Survey = z.object({
+export const SurveyDescription = z.array(z.string());
+
+export const SurveyItem = z.object({
 	header: z.string(),
 	subheading: z.optional(z.string()),
-	body: z.union([Question, z.array(z.string())]),
+	body: z.union([SurveyQuestion, SurveyDescription]),
 });
 
-export type Question = z.input<typeof Question>;
-export type Survey = z.input<typeof Survey>;
+export const SurveySchema = z.object({
+	user_id: z.string(),
+	version: z.union([z.number(), z.string()]),
+	survey: z.array(SurveyItem),
+});
+
+export type Survey = z.input<typeof SurveySchema>;
+export type SurveySurveyItem = z.input<typeof SurveyItem>;
+export type SurveyQuestion = z.input<typeof SurveyQuestion>;

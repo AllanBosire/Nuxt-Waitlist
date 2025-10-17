@@ -1,14 +1,10 @@
-import { z } from "zod/v4-mini";
-
-const schema = z.object({
-	survey: Survey,
-	version: z.union([z.string(), z.number()]),
-	user_id: z.string(),
-});
-
 export default defineEventHandler(async (event) => {
 	const host = getRequestHost(event);
-	const { survey, version, user_id } = await readValidatedBody(event, schema.parse);
+	const body = await readBody(event);
+
+	const { survey, version, user_id } = SurveySchema.parse(
+		typeof body === "string" ? JSON.parse(body) : body
+	);
 
 	const { error } = await execute(
 		useDrizzle()

@@ -85,23 +85,10 @@ export const analytics = pgTable(
 	})
 );
 
-interface Question {
-	question: string;
-	choices: Array<string>;
-	choice: string | number | null;
-}
-
-type Description = string[];
-interface Survey {
-	header: string;
-	subheading?: string;
-	body: Question | Description;
-}
-
 export const surveys = pgTable("surveys", {
 	id: serial("id"),
 	user_id: varchar("session_id", { length: 255 }).unique(),
-	data: jsonb("data").$type<Survey>(),
+	data: jsonb("data").$type<Survey["survey"]>(),
 	created_at: timestamp("created_at").defaultNow(),
 	version: varchar("version", { length: 64 }),
 	host: varchar("host", { length: 64 }),
