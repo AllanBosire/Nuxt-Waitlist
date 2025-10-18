@@ -226,13 +226,26 @@ export async function getTextResponses(bot: Bot, textPostId: string) {
         }));
 }
 
+
+
+export async function getPost(id: string) {
+    const config = useRuntimeConfig()
+    return $fetch<Post>(
+        joinURL(config.public.mmUrl, "/api/v4/posts/", id), {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${config.mattermost.token}`,
+            }
+        }
+    )
+}
+
 /**
  * Given a parent survey post id, collect and aggregate stats from all questions in that survey.
  * Returns structured data for dashboarding.
  */
 export async function getSurveyStats(bot: Bot, parentSurveyPostId: string) {
-    const client = useMatterClient(bot);
-    const {result: parentPost, error} = await execute(client.getPost, parentSurveyPostId);
+    const {result: parentPost, error} = await execute(getPost, parentSurveyPostId);
     if (error || !parentPost) {
         throw createError({message: "Unable to fetch parent survey post", cause: error});
     }
@@ -365,6 +378,7 @@ async function* getAllChannels(page: number = 0) {
         page = page + 1;
     }
 }
+
 export interface Posts {
     order: string[];
     posts: Record<string, Post>;
@@ -450,10 +464,12 @@ export interface Acknowledgement {
     post_id: string;
     acknowledged_at: number;
 }
-export async function* getAllPosts(client: CustomBotClient, channelIds: string[] | string, page: number = 0) {
+
+export async function* getAllPosts(channelIds: string[] | string) {
     channelIds = toArray(channelIds)
     const config = useRuntimeConfig()
     for (const id of channelIds) {
+        let page: number = 0;
         while (true) {
             const postList = await $fetch<Posts>(joinURL(config.public.mmUrl, `/api/v4/channels/${id}/posts`), {
                 headers: {
@@ -465,7 +481,7 @@ export async function* getAllPosts(client: CustomBotClient, channelIds: string[]
                 }
             })
 
-            if (!postList || !isEmpty(postList.posts)) {
+            if (!postList || isEmpty(postList.posts)) {
                 break;
             }
 
@@ -482,7 +498,6 @@ export async function* getAllPosts(client: CustomBotClient, channelIds: string[]
  * @returns Aggregated analytics data (for dashboard visualization)
  */
 export async function collectPollAnalytics(bot: Bot, channelIds?: string | string[]) {
-    const client = useMatterClient(bot);
     if (!channelIds) {
         channelIds = []
         for await(const channels of getAllChannels()) {
@@ -494,11 +509,13 @@ export async function collectPollAnalytics(bot: Bot, channelIds?: string | strin
     }
     channelIds = toArray(channelIds)
 
-    const postsGen = await getAllPosts(client, channelIds);
+    const postsGen = getAllPosts(channelIds);
     const stats = [];
     for await (const {posts} of postsGen) {
-        const pollPosts = values(posts).filter((p) => p.props?.poll || p.message?.startsWith("#### Poll"));
-        for (const post of pollPosts) {
+        for (const post of values(posts)) {
+            if (!post.props.survey) {
+                continue
+            }
             try {
                 const pollStats = await getSurveyStats(bot, post.id);
                 stats.push(pollStats);
@@ -507,8 +524,6 @@ export async function collectPollAnalytics(bot: Bot, channelIds?: string | strin
             }
         }
     }
-
-    consola.info(stats);
 
     const aggregated = {
         totalPolls: stats.length,
