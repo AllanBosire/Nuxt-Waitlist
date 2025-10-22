@@ -47,7 +47,7 @@ export default defineEventHandler(async () => {
 	const BOT_ID = await inviteBot.userId();
 	// const adminEmails = useRuntimeConfig().mattermost.admins.split(",").filter(Boolean);
 	// const admins = await settle(adminEmails.map((email) => getMatterMostUserByEmail(email)));
-	inviteBot.getWebSocket().on("posted", (data: IncomingPostEvent) => {
+	inviteBot.getWebSocket().on("posted", (data) => {
 		const { message, user_id } = tryParse<Post>(data.post);
 		if (user_id === BOT_ID) {
 			return;
@@ -59,6 +59,18 @@ export default defineEventHandler(async () => {
 
 		const emails = String(message.toLowerCase()).matchAll(emailRegex);
 		emails.forEach(async ([email]) => {
+			email = email.trim();
+			const hasInvite = await useDrizzle().query.invites.findFirst({
+				where(fields, operators) {
+					return operators.eq(fields.for_email, email);
+				},
+			});
+
+			if (hasInvite) {
+				console.info("Invite already exists for: ", email, hasInvite.code);
+				return;
+			}
+
 			const { markdown: invitingMessage } = await getMarkdown("sending-invite", {
 				email,
 			});
