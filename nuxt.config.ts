@@ -1,5 +1,9 @@
 import tailwindcss from "@tailwindcss/vite";
 import vue from "@vitejs/plugin-vue";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const cwd = dirname(fileURLToPath(import.meta.url));
 
 export default defineNuxtConfig({
 	compatibilityDate: "2025-09-19",
@@ -45,7 +49,12 @@ export default defineNuxtConfig({
 				baseUrl: "http://localhost:3000",
 			},
 			appUrl: "http://localhost:3000",
-			mmUrl: "https://chat.ifkafin.com",
+			mmUrl: "https://community.finueva.com",
+			media: {
+				tutorial: {
+					landingVideo: "mRW_PwNKZ_E",
+				},
+			},
 		},
 		mattermost: {
 			token: "",
@@ -115,5 +124,35 @@ export default defineNuxtConfig({
 			"PolarComponent",
 		],
 		charts: ["LineChart", "BarChart", "PieChart"],
+	},
+	$development: {
+		runtimeConfig: {
+			public: {
+				mmUrl: "http://localhost:8065",
+			},
+		},
+	},
+	icon: {
+		size: "24px",
+		customCollections: [
+			{
+				dir: join(cwd, "app/assets/icons"),
+				prefix: "local",
+			},
+			{
+				dir: join(cwd, "app/assets/logos"),
+				prefix: "logo",
+			},
+			{
+				dir: join(cwd, "app/assets/insignias"),
+				prefix: "insignia",
+			},
+			{
+				dir: join(cwd, "app/assets/illustrations"),
+				prefix: "ill",
+			},
+		],
+		class: "icon",
+		mode: "svg",
 	},
 });

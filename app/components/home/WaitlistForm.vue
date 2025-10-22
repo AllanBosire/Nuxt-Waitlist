@@ -14,35 +14,43 @@ const { data: invite } = await useFetch("/api/validate-invite", {
 	},
 });
 const { data: state, validate } = useZodState(
-	z.object({
-		email: z.email("Invalid email"),
-		username: z.optional(z.string().check(z.minLength(4))),
-		password1: z.string(),
-		password2: z.string(),
-		token: z.any().check(
-			z.refine((token) => {
-				if (token) {
-					return true;
+	z
+		.object({
+			email: z.email("Invalid email"),
+			username: z.optional(z.string().check(z.minLength(4))),
+			password1: z.string(),
+			password2: z.string(),
+			token: z.any().check(
+				z.refine((token) => {
+					if (token) {
+						return true;
+					}
+					return false;
+				}, "We were not able to obtain your invite token your link may be invalid; it's invite only")
+			),
+		})
+		.check(
+			z.superRefine(({ password1, password2 }, ctx) => {
+				if (password1 !== password2) {
+					ctx.addIssue({
+						path: ["password2"],
+						message: "Passwords do not match",
+						code: "custom",
+					});
 				}
-				return false;
-			}, "We were not able to obtain your invite token your link may be invalid; it's invite only")
-		),
-	}).check(z.superRefine(({password1, password2}, ctx) => {
-		if(password1 !== password2) {
-			ctx.addIssue({
-				path: ["password2"],
-				message: "Passwords do not match",
-				code: "custom"
 			})
-		}
-	}))
+		)
 );
 
-watch(invite, () => {
-	state.email = invite.value?.for_email || undefined
-}, {
-	immediate: true
-})
+watch(
+	invite,
+	() => {
+		state.email = invite.value?.for_email || undefined;
+	},
+	{
+		immediate: true,
+	}
+);
 const joiningWaitlist = ref(false);
 const success = ref(false);
 
@@ -75,7 +83,7 @@ async function joinWaitlist() {
 
 		state.email = undefined;
 		state.password = undefined;
-		jsConfetti?.addConfetti();
+		jsConfetti?.addConfetti().catch(console.error);
 		success.value = true;
 		toast.add({
 			title: "Welcome",
@@ -114,7 +122,7 @@ const config = useAppConfig();
 </script>
 
 <template>
-	<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+	<div class="w-full">
 		<UForm :state="state" @submit.prevent="joinWaitlist">
 			<div>
 				<UFormField class="mt-2" name="email" label="Email">
@@ -179,7 +187,7 @@ const config = useAppConfig();
 				</div>
 			</template>
 		</UModal>
-
+		<HomeVideo />
 		<div class="mt-4 flex gap-2 items-center justify-center">
 			<UAvatarGroup v-if="count?.count">
 				<UAvatar src="https://i.pravatar.cc/150?img=3" />

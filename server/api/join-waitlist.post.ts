@@ -1,4 +1,5 @@
 import { consola } from "consola";
+import { joinURL } from "ufo";
 import { z } from "zod";
 
 const schema = z.object({
@@ -11,6 +12,50 @@ const schema = z.object({
 	password: z.string().min(4),
 	token: z.string(),
 });
+
+function isLocalhostOrIP(domain?: string): boolean {
+	if (!domain) return true;
+	return (
+		domain === "localhost" || /^(?:\d{1,3}\.){3}\d{1,3}$/.test(domain) // IPv4
+	);
+}
+
+/**
+ * Returns consistent cookie settings, same as the Go backend.
+ */
+export function getCookiePolicy(event: any, domain?: string) {
+	const protocol = event.node.req.headers["x-forwarded-proto"] || "http";
+	const secure = protocol === "https";
+
+	const maxAgeSeconds = Number(process.env.SESSION_LENGTH_HOURS || 24) * 60 * 60;
+	const expires = new Date(Date.now() + maxAgeSeconds * 1000);
+
+	const dev = isLocalhostOrIP(domain);
+
+	let cookieDomain: string | undefined;
+	let sameSite: "lax" | "none";
+	let cookieSecure: boolean;
+
+	if (dev) {
+		cookieDomain = undefined;
+		sameSite = "lax";
+		cookieSecure = secure;
+	} else {
+		cookieDomain = domain;
+		sameSite = "none";
+		cookieSecure = true;
+	}
+
+	return {
+		httpOnly: true,
+		secure: cookieSecure,
+		sameSite,
+		domain: cookieDomain,
+		path: "/",
+		expires,
+		maxAge: maxAgeSeconds,
+	};
+}
 
 export default defineEventHandler(async (event) => {
 	consola.info("User trying to signup for waitlist...");
@@ -37,35 +82,39 @@ export default defineEventHandler(async (event) => {
 		.execute()
 		.then((res) => res[0]);
 
-	createMattermostUser({
+	const result = await createMattermostUser({
 		email,
 		password,
 	})
-		.then((result) => {
-			if (!result) {
-				throw createError("Unable to create mattermost user");
-			}
-			execute(sendWelcomeEmail, {
-				link: result.link,
-				email: result.user.email,
-				username: result.user.username,
-			});
-
-			execute(inValidateToken, token, result.user.email);
-			execute(sendInviteUpdateMessage, valid.created_by, result.user.username);
-		})
 		.catch((error) => {
 			consola.error(error);
 			consola.fatal("Could not create mattermost user", error.message);
+			return undefined;
 		})
 		.finally(() => {
 			consola.info(`User ${user.email} is now on mattermost`);
+			return undefined;
 		});
+
+	if (!result) {
+		sendEmergencyEmailToDev("User unable to join Mattermost: ", user.email, user.pswd);
+		throw createError("Unable to create mattermost user");
+	}
+
+	execute(sendWelcomeEmail, {
+		link: result.link,
+		email: result.user.email,
+		username: result.user.username,
+	});
+
+	execute(inValidateToken, token, result.user.email);
+	execute(sendInviteUpdateMessage, valid.created_by, result.user.username);
 
 	consola.info(`User ${user.email} is now on waitlist...`);
 	setCookie(event, "waitlistEmail", user.email, {
 		httpOnly: false,
 		maxAge: 60 * 60 * 24 * 30,
 	});
-	return user;
+
+	return "OK";
 });
