@@ -57,11 +57,11 @@ export function isModerator(user: { email: string; roles?: string }) {
     const moderators = config.mattermost.bots.moderator.persons
         .split(",")
         .filter(Boolean);
-    if (!moderators.includes(user.email)) {
-        return false;
+    if (moderators.includes(user.email)) {
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 /**

@@ -49,6 +49,7 @@ export default defineNitroPlugin(async () => {
         const user = await getMatterMostUserById(user_id);
         if (!user) return;
 
+        
         if (isAdmin(user) || isModerator(user)) return;
 
         if (blockAll) {
