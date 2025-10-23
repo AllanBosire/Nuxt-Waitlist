@@ -116,6 +116,7 @@ export function useMatterClient(bot: Bot) {
             const listeners = new Map<string, Set<(data?: any) => void>>();
 
             let ws: WebSocket | undefined;
+            let connected = false;
             const connect = (): WebSocket => {
                 ws = new WebSocket(url, {
                     headers: { Authorization: `Bearer ${token}` },
@@ -149,6 +150,7 @@ export function useMatterClient(bot: Bot) {
                 ws.on("open", () => {
                     consola.success(`WebSocket opened for bot ${bot}`);
                     emit("open");
+                    connected = true;
                 });
 
                 ws.on("error", (err) => emit("error", err));
@@ -157,6 +159,7 @@ export function useMatterClient(bot: Bot) {
                     consola.warn(
                         `WebSocket closed for bot ${bot} (code: ${code}, reason: ${reason})`,
                     );
+                    connected = false;
                     reconnect();
                 });
 
@@ -188,12 +191,16 @@ export function useMatterClient(bot: Bot) {
 
             ws = connect();
             // ---- Reconnection logic with persistent listeners ----
+            let retries = 0;
+            const maxRetries = 10;
+            const retryInterval = 5000;
             function reconnect() {
-                let retries = 0;
-                const maxRetries = 10;
-                const retryInterval = 5000;
-
                 const tryReconnect = () => {
+                    if (connected) {
+                        clearInterval(interval);
+                        return;
+                    }
+
                     if (retries >= maxRetries) {
                         consola.error(
                             `Bot ${bot} failed to reconnect after ${maxRetries} tries.`,
@@ -202,6 +209,7 @@ export function useMatterClient(bot: Bot) {
                             bot,
                             "WebSocket failed to reconnect",
                         );
+                        clearInterval(interval);
                         return;
                     }
 
@@ -218,14 +226,13 @@ export function useMatterClient(bot: Bot) {
                         );
                         ws = newWs;
                         globalThis.botSockets?.set(bot, socket);
-                    });
-
-                    newWs.once("error", () => {
-                        setTimeout(tryReconnect, retryInterval);
+                        retries = 0;
+                        connected = true;
+                        clearInterval(interval);
                     });
                 };
 
-                setTimeout(tryReconnect, retryInterval);
+                const interval = setInterval(tryReconnect, retryInterval);
             }
 
             const socket = {
