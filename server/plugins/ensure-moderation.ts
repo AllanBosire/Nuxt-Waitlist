@@ -65,7 +65,7 @@ export default defineNitroPlugin(async () => {
         if (root_id) {
             return;
         }
-        
+
         bot.createPostEphemeral(user_id, {
             channel_id: channel_id,
             message:

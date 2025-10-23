@@ -54,10 +54,6 @@ export function isAdmin(user: { email: string; roles?: string }) {
 export function isModerator(user: { email: string; roles?: string }) {
     const config = useRuntimeConfig();
 
-    if (user.roles?.includes("moderator")) {
-        return true;
-    }
-
     const moderators = config.mattermost.bots.moderator.persons
         .split(",")
         .filter(Boolean);
