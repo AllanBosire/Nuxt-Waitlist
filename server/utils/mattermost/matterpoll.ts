@@ -1,20 +1,20 @@
-import {consola} from "consola";
-import {Bot} from "./client";
-import {joinURL} from "ufo";
+import { consola } from "consola";
+import { Bot } from "./client";
+import { joinURL } from "ufo";
 
 type SurveyQuestion =
     | {
-    type: "poll"; // single or multi select
-    question: string;
-    options: string[];
-    multiple?: boolean; // allow multiple choice
-    flags?: string[]; // any matterpoll flags, e.g. ["--anonymous", "--progress"]
-}
+          type: "poll"; // single or multi select
+          question: string;
+          options: string[];
+          multiple?: boolean; // allow multiple choice
+          flags?: string[]; // any matterpoll flags, e.g. ["--anonymous", "--progress"]
+      }
     | {
-    type: "text"; // open text answer
-    question: string;
-    instructions?: string;
-};
+          type: "text"; // open text answer
+          question: string;
+          instructions?: string;
+      };
 
 type Survey = {
     id: string;
@@ -33,7 +33,7 @@ export async function sendSurvey(
     bot: Bot,
     channelId: string,
     title: string,
-    questions: SurveyQuestion[]
+    questions: SurveyQuestion[],
 ) {
     const client = useMatterClient(bot);
 
@@ -56,17 +56,21 @@ export async function sendSurvey(
         },
     };
 
-    const {result: parentResult, error: parentError} = await execute(
+    const { result: parentResult, error: parentError } = await execute(
         client.createPost,
-        parentPost
+        parentPost,
     );
     if (parentError || !parentResult) {
-        throw createError({message: "Unable to create survey parent post", cause: parentError});
+        throw createError({
+            message: "Unable to create survey parent post",
+            cause: parentError,
+        });
     }
     const parentPostId = parentResult.id;
 
     // For each question create a poll (via /poll) or a normal post for text question.
-    const questionToPostId: Record<number, { postId: string; type: string }> = {};
+    const questionToPostId: Record<number, { postId: string; type: string }> =
+        {};
 
     for (let i = 0; i < questions.length; i++) {
         const q = questions[i];
@@ -83,10 +87,10 @@ export async function sendSurvey(
                 .join(" ")} ${flags.join(" ")}`.trim();
 
             // Execute the slash command in the channel (this will create a poll post)
-            const {result: commandResult, error: cmdError} = await execute(
+            const { result: commandResult, error: cmdError } = await execute(
                 client.executeCommand,
                 command,
-                {channel_id: channelId, root_id: parentPostId}
+                { channel_id: channelId, root_id: parentPostId },
             );
 
             if (cmdError || !commandResult) {
@@ -96,32 +100,45 @@ export async function sendSurvey(
 
             const pollPostId = commandResult.trigger_id;
             if (pollPostId) {
-                questionToPostId[i] = {postId: pollPostId, type: "poll"};
+                questionToPostId[i] = { postId: pollPostId, type: "poll" };
             } else {
                 consola.warn(
                     "Could not locate created poll post id for command result:",
-                    commandResult
+                    commandResult,
                 );
             }
         } else {
             // text question: create a normal post that instructs users to reply in-thread
             const message = `**Q${i + 1}: ${q.question}**\n\n${
-                (q as any).instructions ?? "Reply to this message with your answer."
+                (q as any).instructions ??
+                "Reply to this message with your answer."
             }\n\n*(Survey ID: ${surveyId})*`;
 
-            const {result: textPost, error: textError} = await execute(client.createPost, {
-                channel_id: channelId,
-                message,
-                root_id: parentPostId, // link it to parent as a thread child (if you want)
-                props: {survey: {id: surveyId, questionIndex: i, type: "text"}},
-            });
+            const { result: textPost, error: textError } = await execute(
+                client.createPost,
+                {
+                    channel_id: channelId,
+                    message,
+                    root_id: parentPostId, // link it to parent as a thread child (if you want)
+                    props: {
+                        survey: {
+                            id: surveyId,
+                            questionIndex: i,
+                            type: "text",
+                        },
+                    },
+                },
+            );
 
             if (textError || !textPost) {
-                consola.error(`Failed to create text question ${i}:`, textError);
+                consola.error(
+                    `Failed to create text question ${i}:`,
+                    textError,
+                );
                 continue;
             }
 
-            questionToPostId[i] = {postId: textPost.id, type: "text"};
+            questionToPostId[i] = { postId: textPost.id, type: "text" };
         }
     }
 
@@ -139,9 +156,12 @@ export async function sendSurvey(
  */
 export async function getPollStats(bot: Bot, pollPostId: string) {
     const client = useMatterClient(bot);
-    const {result: post, error} = await execute(client.getPost, pollPostId);
+    const { result: post, error } = await execute(client.getPost, pollPostId);
     if (error || !post) {
-        throw createError({message: "Unable to fetch poll post", cause: error});
+        throw createError({
+            message: "Unable to fetch poll post",
+            cause: error,
+        });
     }
 
     const props = post.props || {};
@@ -149,7 +169,9 @@ export async function getPollStats(bot: Bot, pollPostId: string) {
     // plugin stores the poll data in props.poll or in attachments - best-effort
     const poll =
         props.poll ||
-        (props.attachments && props.attachments[0] && props.attachments[0].poll) ||
+        (props.attachments &&
+            props.attachments[0] &&
+            props.attachments[0].poll) ||
         {};
     if (!poll || !poll.options) {
         throw createError("Post does not appear to be a matterpoll poll post");
@@ -162,8 +184,8 @@ export async function getPollStats(bot: Bot, pollPostId: string) {
             poll.votes && poll.votes[opt]
                 ? poll.votes[opt].length
                 : poll.votes_count
-                    ? poll.votes_count[opt] ?? 0
-                    : 0;
+                  ? (poll.votes_count[opt] ?? 0)
+                  : 0;
         votes[opt] = count || 0;
     }
 
@@ -187,7 +209,10 @@ export async function getTextResponses(bot: Bot, textPostId: string) {
     // try getPostThread (convenience) or fallback to fetching recent posts and filtering by root_id
     try {
         if (typeof client.getPostThread === "function") {
-            const {result: threadRes, error} = await execute(client.getPostThread, textPostId);
+            const { result: threadRes, error } = await execute(
+                client.getPostThread,
+                textPostId,
+            );
             if (error) throw error;
             // threadRes.posts is an object keyed by post id
             return Object.values(threadRes.posts)
@@ -202,19 +227,31 @@ export async function getTextResponses(bot: Bot, textPostId: string) {
     } catch (err) {
         consola.debug(
             "getPostThread not available or failed; falling back to scanning channel posts",
-            err
+            err,
         );
     }
 
     // Fallback: getPosts for channel and filter by root_id
-    const {result: post, error: postErr} = await execute(client.getPost, textPostId);
+    const { result: post, error: postErr } = await execute(
+        client.getPost,
+        textPostId,
+    );
     if (postErr || !post)
-        throw createError({message: "Unable to fetch text post", cause: postErr});
+        throw createError({
+            message: "Unable to fetch text post",
+            cause: postErr,
+        });
     const channelId = post.channel_id;
 
-    const {result: postsRes, error: postsErr} = await execute(client.getPosts, channelId);
+    const { result: postsRes, error: postsErr } = await execute(
+        client.getPosts,
+        channelId,
+    );
     if (postsErr || !postsRes)
-        throw createError({message: "Unable to fetch channel posts", cause: postsErr});
+        throw createError({
+            message: "Unable to fetch channel posts",
+            cause: postsErr,
+        });
 
     return Object.values(postsRes.posts)
         .filter((p: any) => p.root_id === textPostId)
@@ -226,18 +263,14 @@ export async function getTextResponses(bot: Bot, textPostId: string) {
         }));
 }
 
-
-
 export async function getPost(id: string) {
-    const config = useRuntimeConfig()
-    return $fetch<Post>(
-        joinURL(config.public.mmUrl, "/api/v4/posts/", id), {
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${config.mattermost.token}`,
-            }
-        }
-    )
+    const config = useRuntimeConfig();
+    return $fetch<Post>(joinURL(config.public.mmUrl, "/api/v4/posts/", id), {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${config.mattermost.token}`,
+        },
+    });
 }
 
 /**
@@ -245,14 +278,21 @@ export async function getPost(id: string) {
  * Returns structured data for dashboarding.
  */
 export async function getSurveyStats(bot: Bot, parentSurveyPostId: string) {
-    const {result: parentPost, error} = await execute(getPost, parentSurveyPostId);
+    const { result: parentPost, error } = await execute(
+        getPost,
+        parentSurveyPostId,
+    );
     if (error || !parentPost) {
-        throw createError({message: "Unable to fetch parent survey post", cause: error});
+        throw createError({
+            message: "Unable to fetch parent survey post",
+            cause: error,
+        });
     }
 
     const props = parentPost.props || {};
     const surveyMeta = props.survey || {};
-    const mapping: Record<number, { postId: string; type: string }> = surveyMeta.questionsMap || {};
+    const mapping: Record<number, { postId: string; type: string }> =
+        surveyMeta.questionsMap || {};
 
     const results: Array<any> = [];
 
@@ -264,10 +304,14 @@ export async function getSurveyStats(bot: Bot, parentSurveyPostId: string) {
         try {
             if (entry.type === "poll") {
                 const pollStats = await getPollStats(bot, entry.postId);
-                results.push({index: idx, type: "poll", stats: pollStats});
+                results.push({ index: idx, type: "poll", stats: pollStats });
             } else {
                 const textResponses = await getTextResponses(bot, entry.postId);
-                results.push({index: idx, type: "text", responses: textResponses});
+                results.push({
+                    index: idx,
+                    type: "text",
+                    responses: textResponses,
+                });
             }
         } catch (err) {
             consola.warn(`Failed to collect stats for question ${idx}:`, err);
@@ -312,25 +356,35 @@ type Team = {
 
 type Teams = Team[];
 
+export async function* getAllTeamChannels(teamId: string) {
+    const chunkedChannels = getAllChannels();
+    for await (const channels of chunkedChannels) {
+        yield channels.filter((channel) => channel.team_id === teamId);
+    }
+}
+
 export async function* getAllTeams(page = 0) {
-    const config = useRuntimeConfig()
+    const config = useRuntimeConfig();
     while (true) {
-        const teams = await $fetch<Teams>(joinURL(config.public.mmUrl, "api/v4/teams"), {
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${config.mattermost.token}`
+        const teams = await $fetch<Teams>(
+            joinURL(config.public.mmUrl, "api/v4/teams"),
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${config.mattermost.token}`,
+                },
+                query: {
+                    page,
+                },
             },
-            query: {
-                page
-            }
-        })
+        );
 
         if (!teams || !teams.length) {
             break;
         }
 
-        yield teams
-        page = page + 1
+        yield teams;
+        page = page + 1;
     }
 }
 
@@ -357,18 +411,30 @@ type Channel = {
 
 type Channels = Channel[];
 
-async function* getAllChannels(page: number = 0) {
-    const config = useRuntimeConfig()
-    while (true) {
-        const channels = await $fetch<Channels>(joinURL(config.public.mmUrl, "api/v4/channels"), {
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${config.mattermost.token}`
+const cachedChannels = defineCachedFunction(
+    (page: number) => {
+        const config = useRuntimeConfig();
+        return $fetch<Channels>(
+            joinURL(config.public.mmUrl, "api/v4/channels"),
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${config.mattermost.token}`,
+                },
+                query: {
+                    page,
+                },
             },
-            query: {
-                page
-            }
-        })
+        );
+    },
+    {
+        maxAge: 60,
+    },
+);
+
+async function* getAllChannels(page: number = 0) {
+    while (true) {
+        const channels = await cachedChannels(page);
 
         if (!channels || !channels.length) {
             break;
@@ -466,20 +532,23 @@ export interface Acknowledgement {
 }
 
 export async function* getAllPosts(channelIds: string[] | string) {
-    channelIds = toArray(channelIds)
-    const config = useRuntimeConfig()
+    channelIds = toArray(channelIds);
+    const config = useRuntimeConfig();
     for (const id of channelIds) {
         let page: number = 0;
         while (true) {
-            const postList = await $fetch<Posts>(joinURL(config.public.mmUrl, `/api/v4/channels/${id}/posts`), {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${config.mattermost.token}`
+            const postList = await $fetch<Posts>(
+                joinURL(config.public.mmUrl, `/api/v4/channels/${id}/posts`),
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${config.mattermost.token}`,
+                    },
+                    query: {
+                        page,
+                    },
                 },
-                query: {
-                    page
-                }
-            })
+            );
 
             if (!postList || isEmpty(postList.posts)) {
                 break;
@@ -497,24 +566,27 @@ export async function* getAllPosts(channelIds: string[] | string) {
  * @param channelIds - The Mattermost channel ID
  * @returns Aggregated analytics data (for dashboard visualization)
  */
-export async function collectPollAnalytics(bot: Bot, channelIds?: string | string[]) {
+export async function collectPollAnalytics(
+    bot: Bot,
+    channelIds?: string | string[],
+) {
     if (!channelIds) {
-        channelIds = []
-        for await(const channels of getAllChannels()) {
+        channelIds = [];
+        for await (const channels of getAllChannels()) {
             channels.forEach((channel) => {
                 // @ts-expect-error
                 channelIds.push(channel.id);
-            })
+            });
         }
     }
-    channelIds = toArray(channelIds)
+    channelIds = toArray(channelIds);
 
     const postsGen = getAllPosts(channelIds);
     const stats = [];
-    for await (const {posts} of postsGen) {
+    for await (const { posts } of postsGen) {
         for (const post of values(posts)) {
             if (!post.props.survey) {
-                continue
+                continue;
             }
             try {
                 const pollStats = await getSurveyStats(bot, post.id);

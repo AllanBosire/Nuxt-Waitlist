@@ -35,7 +35,7 @@ async function onSubmit() {
 		return;
 	}
 
-	if (result.success) {
+	if (result) {
 		navigateTo("/");
 	} else {
 		error.value = "Invalid invite code.";

@@ -47,7 +47,7 @@ async function onSubmit() {
 		return;
 	}
 
-	if (result.success) {
+	if (result) {
 		success.value = true;
 		form.email = "";
 	} else {
