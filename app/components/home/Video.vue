@@ -48,7 +48,7 @@ const isOpen = ref(false);
     align-items: center;
     justify-content: center;
     border-radius: 56px;
-    background-position: bottom;
+    background-position: 100%;
 }
 
 .play {
