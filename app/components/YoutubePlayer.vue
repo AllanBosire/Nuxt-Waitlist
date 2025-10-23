@@ -1,39 +1,21 @@
 <script setup lang="ts">
-import { parseURL } from "ufo";
-const props = defineProps<{
+defineProps<{
     video: string;
 }>();
-function getYTVideoId(link: string) {
-    if (!link) {
-        return undefined;
-    }
-
-    const lower = link.toLowerCase();
-    if (!lower.startsWith("http") && !lower.startsWith("you")) {
-        return link;
-    }
-
-    const url = parseURL(link, "https://");
-    if (url.host === "youtu.be") {
-        return url.pathname.replace("/", "");
-    }
-    const params = new URLSearchParams(url.search);
-    return params.get("v") as string;
-}
-
-const video_id = computed(() => getYTVideoId(props.video));
 </script>
 
 <template>
-    <div v-if="video_id">
-        <iframe
-            :src="`https://www.youtube.com/embed/${video_id}`"
-            frameborder="0"
-            allowfullscreen
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            class="w-full aspect-video rounded-xl"
-        ></iframe>
-    </div>
+    <video
+        class="w-full aspect-video rounded-xl"
+        controls
+        playsinline
+        autoplay
+        preload="metadata"
+        v-if="video"
+    >
+        <source :src="video" type="video/mp4" />
+        Your browser does not support the video tag.
+    </video>
     <div v-else>No Video Id or Link from {{ video }}</div>
 </template>
 <style scoped>
@@ -43,7 +25,7 @@ const video_id = computed(() => getYTVideoId(props.video));
     max-width: 800px;
     margin: auto;
 }
-iframe {
+video {
     width: 100%;
     height: 100%;
 }

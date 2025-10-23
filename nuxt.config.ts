@@ -54,7 +54,7 @@ export default defineNuxtConfig({
             mmUrl: "https://community.finueva.com",
             media: {
                 tutorial: {
-                    landingVideo: "mRW_PwNKZ_E",
+                    landingVideo: "/how-to-join-community.mp4",
                 },
             },
         },

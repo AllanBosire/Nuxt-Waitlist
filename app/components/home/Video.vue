@@ -40,15 +40,14 @@ const isOpen = ref(false);
 }
 
 .container {
-    background:
-        linear-gradient(to top, #00000063, #0006), url("/resources.png");
+    background: linear-gradient(to top, #00000063, #0006), url("/How-To.jpg");
     background-size: cover;
     height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 56px;
-    background-position: 100%;
+    background-position: 0 5%;
 }
 
 .play {
