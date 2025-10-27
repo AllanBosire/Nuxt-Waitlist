@@ -72,7 +72,6 @@ export default defineEventHandler(async () => {
                     email,
                     hasInvite.code,
                 );
-                return;
             }
 
             const { markdown: invitingMessage } = await getMarkdown(
@@ -90,7 +89,14 @@ export default defineEventHandler(async () => {
                 "invite",
                 dm.id,
                 (async function () {
-                    const url = await sendInviteEmail(user_id, email);
+                    let url: string;
+
+                    if(hasInvite) {
+                        url = getInviteLink(hasInvite.code)
+                    }else {
+                        url = await sendInviteEmail(user_id, email);
+                    }
+
                     // sleeep for 3 seconds
                     await new Promise((resolve) => setTimeout(resolve, 3000));
                     return url;
@@ -107,7 +113,8 @@ export default defineEventHandler(async () => {
                 url,
             });
 
-            getOrCreateDM({
+
+            await getOrCreateDM({
                 bot: "invite",
                 user_id,
                 message: sentMessage,
