@@ -1,6 +1,5 @@
 import { count, notLike } from 'drizzle-orm';
-
-const excludedDomains = ['ifkafin.com', 'localhost'];
+import { ExcludedDomains } from '~~/server/utils/constants';
 
 export default defineEventHandler(async () => {
   const entry = await useDrizzle()
@@ -8,7 +7,7 @@ export default defineEventHandler(async () => {
     .from(tables.waitlist)
     .where(
       and(
-        ...excludedDomains.map((d) => notLike(tables.waitlist.email, `%${d}`))
+        ...ExcludedDomains.map((d) => notLike(tables.waitlist.email, `%${d}`))
       )
     );
 
