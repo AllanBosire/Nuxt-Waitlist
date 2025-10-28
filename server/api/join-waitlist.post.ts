@@ -80,10 +80,25 @@ export default defineEventHandler(async (event) => {
 		.execute()
 		.then((res) => res[0]);
 
-	const result = await createMattermostUser({
+	createMattermostUser({
 		email,
 		password,
 	})
+		.then((result) => {
+			if (!result) {
+				sendEmergencyEmailToDev("User unable to join Mattermost: ", user.email, user.pswd);
+				throw createError("Unable to create mattermost user");
+			}
+
+			execute(sendWelcomeEmail, {
+				link: result.link,
+				email: result.user.email,
+				username: result.user.username,
+			});
+
+			execute(inValidateToken, token, result.user.email);
+			execute(sendInviteUpdateMessage, valid.created_by, result.user.username);
+		})
 		.catch((error) => {
 			consola.error(error);
 			consola.fatal("Could not create mattermost user", error.message);
@@ -93,20 +108,6 @@ export default defineEventHandler(async (event) => {
 			consola.info(`User ${user.email} is now on mattermost`);
 			return undefined;
 		});
-
-	if (!result) {
-		sendEmergencyEmailToDev("User unable to join Mattermost: ", user.email, user.pswd);
-		throw createError("Unable to create mattermost user");
-	}
-
-	execute(sendWelcomeEmail, {
-		link: result.link,
-		email: result.user.email,
-		username: result.user.username,
-	});
-
-	execute(inValidateToken, token, result.user.email);
-	execute(sendInviteUpdateMessage, valid.created_by, result.user.username);
 
 	consola.info(`User ${user.email} is now on waitlist...`);
 	setCookie(event, "waitlistEmail", user.email, {
