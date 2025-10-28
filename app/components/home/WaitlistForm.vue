@@ -19,7 +19,7 @@ const { data: state, validate } = useZodState(
 			email: z.email("Invalid email"),
 			username: z.optional(z.string().check(z.minLength(4))),
 			password1: z.string(),
-			password2: z.string(),
+			password2: z.string().check(z.minLength(8)),
 			token: z.any().check(
 				z.refine((token) => {
 					if (token) {
