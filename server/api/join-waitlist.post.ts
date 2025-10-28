@@ -1,12 +1,9 @@
 import { consola } from "consola";
-import { joinURL } from "ufo";
 import { z } from "zod";
 
 const schema = z.object({
 	email: z.email().refine(async (email) => {
-		const alreadyExists = await useDrizzle().query.waitlist.findFirst({
-			where: (waitlist, { eq }) => eq(waitlist.email, email),
-		});
+		const alreadyExists = await getMatterMostUserByEmail(email);
 		return !alreadyExists;
 	}, "Email is already in use"),
 	password: z.string().min(4),
@@ -78,6 +75,7 @@ export default defineEventHandler(async (event) => {
 			referrer: valid.created_by,
 			invite_code: token,
 		})
+		.onConflictDoNothing()
 		.returning()
 		.execute()
 		.then((res) => res[0]);
