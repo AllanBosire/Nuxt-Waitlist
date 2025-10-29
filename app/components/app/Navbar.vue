@@ -16,14 +16,7 @@ const { data: me } = useMe();
 					<LogoName />
 				</NuxtLink>
 			</div>
-			<div class="gap-2 flex">
-				<UButton
-					v-if="config.waitlist.showSignups && home"
-					to="/leaderboard"
-					color="neutral"
-				>
-					See Signups
-				</UButton>
+			<div class="gap-2 flex">	
 				<UButton v-if="me" color="warning" @click="logout">Log Out</UButton>
 				<UButton v-else-if="!home" to="/" color="primary">Sign Up</UButton>
 			</div>

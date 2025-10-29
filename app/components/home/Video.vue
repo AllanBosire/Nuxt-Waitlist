@@ -1,7 +1,7 @@
 <template>
-    <div class="py-12 px-4 relative">
+    <div class="py-12 relative">
         <div
-            class="relative max-w-6xl mx-auto container"
+            class="bg-[url('/How-To.png')] h-[80px] flex items-center justify-center bg-no-repeat bg-center bg-cover rounded-4xl"
             @click="isOpen = true"
         >
             <div class="relative">
@@ -35,7 +35,7 @@ const isOpen = ref(false);
 <style scoped>
 @keyframes bubble {
     to {
-        box-shadow: 0 0 0 20px #1741955c;
+        box-shadow: 0 0 0 20px #ff000032;
     }
 }
 
@@ -55,7 +55,7 @@ const isOpen = ref(false);
     height: 45px;
     width: 45px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.486);
+    background: #DC2626;
     border: none;
     outline: none;
     cursor: pointer;

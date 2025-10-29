@@ -196,14 +196,14 @@ const config = useAppConfig();
 			</UAvatarGroup>
 			<p class="font-medium text-gray-500 text-sm">Join {{ count?.count || 0 }}+ others</p>
 		</div>
-		<p class="mt-10 text-center text-sm text-gray-400" v-if="config.waitlist.showSignups">
+		<p class="mt-10 text-center text-sm text-gray-400">
 			Already signed up?
-			<NuxtLink
-				to="/leaderboard"
+			<a
+				href="https://community.finueva.com"
 				class="cursor-pointer transition-color font-semibold leading-6 text-purple hover:text-purple/90"
 			>
-				Check your spot on the waiting list.
-			</NuxtLink>
+				Login to community.
+			</a>
 		</p>
 	</div>
 </template>
