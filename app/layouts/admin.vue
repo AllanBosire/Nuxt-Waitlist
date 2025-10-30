@@ -25,6 +25,16 @@ const items: NavigationMenuItem[][] = [
 			to: "/admin/channels",
 		},
 		{
+			label: "Referrals",
+			icon: "i-lucide-share-2",
+			to: "/admin/referrals",
+		},
+		{
+			label: "Leaderboard",
+			icon: "i-lucide-trophy",
+			to: "/admin/leaderboard",
+		},
+		{
 			label: "Notifications",
 			icon: "i-lucide-bell",
 		},

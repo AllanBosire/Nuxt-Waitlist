@@ -1,5 +1,10 @@
 <script setup>
-const { data: users } = await useFetch("/api/anon-list");
+const { data: users } = await useFetch('/api/anon-list');
+
+definePageMeta({
+  middleware: 'admin',
+  layout: 'admin',
+});
 </script>
 
 <template>

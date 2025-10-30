@@ -196,4 +196,9 @@ html {
 	--font-getar: "Getar", serif;
 	--font-optika: "Optika", serif;
 	--font-outfit: "Outfit", sans-serif;
+
+	--breakpoint-phone: 0px;
+	--breakpoint-tablet: 768px;
+	--breakpoint-desktop: 1024px;
+	--breakpoint-ultrawide: 1920px;
 }
