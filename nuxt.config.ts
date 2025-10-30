@@ -139,13 +139,6 @@ export default defineNuxtConfig({
         ],
         charts: ["LineChart", "BarChart", "PieChart"],
     },
-    $development: {
-        runtimeConfig: {
-            public: {
-                mmUrl: "http://localhost:8065",
-            },
-        },
-    },
     icon: {
         size: "24px",
         customCollections: [
