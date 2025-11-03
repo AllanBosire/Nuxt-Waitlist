@@ -1,10 +1,10 @@
-import { eq } from 'drizzle-orm';
-import { waitlist } from '~~/server/database/schema';
+import { eq } from "drizzle-orm";
+import { waitlist } from "~~/server/database/schema";
 
 export default defineEventHandler(async (event) => {
   const db = useDrizzle();
 
-  const referrerId = getRouterParam(event, 'referrer');
+  const referrerId = getRouterParam(event, "referrerId");
 
   if (!referrerId) {
     return null;

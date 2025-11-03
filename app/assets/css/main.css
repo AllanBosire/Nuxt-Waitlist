@@ -2,203 +2,215 @@
 @import "@nuxt/ui";
 
 @font-face {
-	font-family: "Getar";
-	src: url("/fonts/getar/Getar-Regular.woff2") format("woff2");
+  font-family: "Getar";
+  src: url("/fonts/getar/Getar-Regular.woff2") format("woff2");
 }
 
 @font-face {
-	font-family: "Getar";
-	src: url("/fonts/getar/Getar-Italic.woff2") format("woff2");
-	font-style: italic;
+  font-family: "Getar";
+  src: url("/fonts/getar/Getar-Italic.woff2") format("woff2");
+  font-style: italic;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-Medium.eot");
-	src: url("/fonts/optika/Optika-Medium.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-Medium.woff2") format("woff2"),
-		url("/fonts/optika/Optika-Medium.woff") format("woff"),
-		url("/fonts/optika/Optika-Medium.svg#Optika-Medium") format("svg");
-	font-weight: 500;
-	font-style: normal;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-Medium.eot");
+  src: url("/fonts/optika/Optika-Medium.eot?#iefix") format("embedded-opentype"),
+    url("/fonts/optika/Optika-Medium.woff2") format("woff2"),
+    url("/fonts/optika/Optika-Medium.woff") format("woff"),
+    url("/fonts/optika/Optika-Medium.svg#Optika-Medium") format("svg");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-Italic.eot");
-	src: url("/fonts/optika/Optika-Italic.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-Italic.woff2") format("woff2"),
-		url("/fonts/optika/Optika-Italic.woff") format("woff"),
-		url("/fonts/optika/Optika-Italic.svg#Optika-Italic") format("svg");
-	font-weight: normal;
-	font-style: italic;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-Italic.eot");
+  src: url("/fonts/optika/Optika-Italic.eot?#iefix") format("embedded-opentype"),
+    url("/fonts/optika/Optika-Italic.woff2") format("woff2"),
+    url("/fonts/optika/Optika-Italic.woff") format("woff"),
+    url("/fonts/optika/Optika-Italic.svg#Optika-Italic") format("svg");
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-BlackItalic.eot");
-	src: url("/fonts/optika/Optika-BlackItalic.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-BlackItalic.woff2") format("woff2"),
-		url("/fonts/optika/Optika-BlackItalic.woff") format("woff"),
-		url("/fonts/optika/Optika-BlackItalic.svg#Optika-BlackItalic") format("svg");
-	font-weight: 900;
-	font-style: italic;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-BlackItalic.eot");
+  src: url("/fonts/optika/Optika-BlackItalic.eot?#iefix")
+      format("embedded-opentype"),
+    url("/fonts/optika/Optika-BlackItalic.woff2") format("woff2"),
+    url("/fonts/optika/Optika-BlackItalic.woff") format("woff"),
+    url("/fonts/optika/Optika-BlackItalic.svg#Optika-BlackItalic") format("svg");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-Black.eot");
-	src: url("/fonts/optika/Optika-Black.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-Black.woff2") format("woff2"),
-		url("/fonts/optika/Optika-Black.woff") format("woff"),
-		url("/fonts/optika/Optika-Black.svg#Optika-Black") format("svg");
-	font-weight: 900;
-	font-style: normal;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-Black.eot");
+  src: url("/fonts/optika/Optika-Black.eot?#iefix") format("embedded-opentype"),
+    url("/fonts/optika/Optika-Black.woff2") format("woff2"),
+    url("/fonts/optika/Optika-Black.woff") format("woff"),
+    url("/fonts/optika/Optika-Black.svg#Optika-Black") format("svg");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-BoldItalic.eot");
-	src: url("/fonts/optika/Optika-BoldItalic.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-BoldItalic.woff2") format("woff2"),
-		url("/fonts/optika/Optika-BoldItalic.woff") format("woff"),
-		url("/fonts/optika/Optika-BoldItalic.svg#Optika-BoldItalic") format("svg");
-	font-weight: bold;
-	font-style: italic;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-BoldItalic.eot");
+  src: url("/fonts/optika/Optika-BoldItalic.eot?#iefix")
+      format("embedded-opentype"),
+    url("/fonts/optika/Optika-BoldItalic.woff2") format("woff2"),
+    url("/fonts/optika/Optika-BoldItalic.woff") format("woff"),
+    url("/fonts/optika/Optika-BoldItalic.svg#Optika-BoldItalic") format("svg");
+  font-weight: bold;
+  font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-Light.eot");
-	src: url("/fonts/optika/Optika-Light.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-Light.woff2") format("woff2"),
-		url("/fonts/optika/Optika-Light.woff") format("woff"),
-		url("/fonts/optika/Optika-Light.svg#Optika-Light") format("svg");
-	font-weight: 300;
-	font-style: normal;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-Light.eot");
+  src: url("/fonts/optika/Optika-Light.eot?#iefix") format("embedded-opentype"),
+    url("/fonts/optika/Optika-Light.woff2") format("woff2"),
+    url("/fonts/optika/Optika-Light.woff") format("woff"),
+    url("/fonts/optika/Optika-Light.svg#Optika-Light") format("svg");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-Bold.eot");
-	src: url("/fonts/optika/Optika-Bold.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-Bold.woff2") format("woff2"),
-		url("/fonts/optika/Optika-Bold.woff") format("woff"),
-		url("/fonts/optika/Optika-Bold.svg#Optika-Bold") format("svg");
-	font-weight: bold;
-	font-style: normal;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-Bold.eot");
+  src: url("/fonts/optika/Optika-Bold.eot?#iefix") format("embedded-opentype"),
+    url("/fonts/optika/Optika-Bold.woff2") format("woff2"),
+    url("/fonts/optika/Optika-Bold.woff") format("woff"),
+    url("/fonts/optika/Optika-Bold.svg#Optika-Bold") format("svg");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-LightItalic.eot");
-	src: url("/fonts/optika/Optika-LightItalic.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-LightItalic.woff2") format("woff2"),
-		url("/fonts/optika/Optika-LightItalic.woff") format("woff"),
-		url("/fonts/optika/Optika-LightItalic.svg#Optika-LightItalic") format("svg");
-	font-weight: 300;
-	font-style: italic;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-LightItalic.eot");
+  src: url("/fonts/optika/Optika-LightItalic.eot?#iefix")
+      format("embedded-opentype"),
+    url("/fonts/optika/Optika-LightItalic.woff2") format("woff2"),
+    url("/fonts/optika/Optika-LightItalic.woff") format("woff"),
+    url("/fonts/optika/Optika-LightItalic.svg#Optika-LightItalic") format("svg");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-SemiBoldItalic.eot");
-	src: url("/fonts/optika/Optika-SemiBoldItalic.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-SemiBoldItalic.woff2") format("woff2"),
-		url("/fonts/optika/Optika-SemiBoldItalic.woff") format("woff"),
-		url("/fonts/optika/Optika-SemiBoldItalic.svg#Optika-SemiBoldItalic") format("svg");
-	font-weight: 600;
-	font-style: italic;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-SemiBoldItalic.eot");
+  src: url("/fonts/optika/Optika-SemiBoldItalic.eot?#iefix")
+      format("embedded-opentype"),
+    url("/fonts/optika/Optika-SemiBoldItalic.woff2") format("woff2"),
+    url("/fonts/optika/Optika-SemiBoldItalic.woff") format("woff"),
+    url("/fonts/optika/Optika-SemiBoldItalic.svg#Optika-SemiBoldItalic")
+      format("svg");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-SemiBold.eot");
-	src: url("/fonts/optika/Optika-SemiBold.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-SemiBold.woff2") format("woff2"),
-		url("/fonts/optika/Optika-SemiBold.woff") format("woff"),
-		url("/fonts/optika/Optika-SemiBold.svg#Optika-SemiBold") format("svg");
-	font-weight: 600;
-	font-style: normal;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-SemiBold.eot");
+  src: url("/fonts/optika/Optika-SemiBold.eot?#iefix")
+      format("embedded-opentype"),
+    url("/fonts/optika/Optika-SemiBold.woff2") format("woff2"),
+    url("/fonts/optika/Optika-SemiBold.woff") format("woff"),
+    url("/fonts/optika/Optika-SemiBold.svg#Optika-SemiBold") format("svg");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-Regular.eot");
-	src: url("/fonts/optika/Optika-Regular.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-Regular.woff2") format("woff2"),
-		url("/fonts/optika/Optika-Regular.woff") format("woff"),
-		url("/fonts/optika/Optika-Regular.svg#Optika-Regular") format("svg");
-	font-weight: normal;
-	font-style: normal;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-Regular.eot");
+  src: url("/fonts/optika/Optika-Regular.eot?#iefix")
+      format("embedded-opentype"),
+    url("/fonts/optika/Optika-Regular.woff2") format("woff2"),
+    url("/fonts/optika/Optika-Regular.woff") format("woff"),
+    url("/fonts/optika/Optika-Regular.svg#Optika-Regular") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-ThinItalic.eot");
-	src: url("/fonts/optika/Optika-ThinItalic.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-ThinItalic.woff2") format("woff2"),
-		url("/fonts/optika/Optika-ThinItalic.woff") format("woff"),
-		url("/fonts/optika/Optika-ThinItalic.svg#Optika-ThinItalic") format("svg");
-	font-weight: 100;
-	font-style: italic;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-ThinItalic.eot");
+  src: url("/fonts/optika/Optika-ThinItalic.eot?#iefix")
+      format("embedded-opentype"),
+    url("/fonts/optika/Optika-ThinItalic.woff2") format("woff2"),
+    url("/fonts/optika/Optika-ThinItalic.woff") format("woff"),
+    url("/fonts/optika/Optika-ThinItalic.svg#Optika-ThinItalic") format("svg");
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-Thin.eot");
-	src: url("/fonts/optika/Optika-Thin.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-Thin.woff2") format("woff2"),
-		url("/fonts/optika/Optika-Thin.woff") format("woff"),
-		url("/fonts/optika/Optika-Thin.svg#Optika-Thin") format("svg");
-	font-weight: 100;
-	font-style: normal;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-Thin.eot");
+  src: url("/fonts/optika/Optika-Thin.eot?#iefix") format("embedded-opentype"),
+    url("/fonts/optika/Optika-Thin.woff2") format("woff2"),
+    url("/fonts/optika/Optika-Thin.woff") format("woff"),
+    url("/fonts/optika/Optika-Thin.svg#Optika-Thin") format("svg");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Optika";
-	src: url("/fonts/optika/Optika-MediumItalic.eot");
-	src: url("/fonts/optika/Optika-MediumItalic.eot?#iefix") format("embedded-opentype"),
-		url("/fonts/optika/Optika-MediumItalic.woff2") format("woff2"),
-		url("/fonts/optika/Optika-MediumItalic.woff") format("woff"),
-		url("/fonts/optika/Optika-MediumItalic.svg#Optika-MediumItalic") format("svg");
-	font-weight: 500;
-	font-style: italic;
-	font-display: swap;
+  font-family: "Optika";
+  src: url("/fonts/optika/Optika-MediumItalic.eot");
+  src: url("/fonts/optika/Optika-MediumItalic.eot?#iefix")
+      format("embedded-opentype"),
+    url("/fonts/optika/Optika-MediumItalic.woff2") format("woff2"),
+    url("/fonts/optika/Optika-MediumItalic.woff") format("woff"),
+    url("/fonts/optika/Optika-MediumItalic.svg#Optika-MediumItalic")
+      format("svg");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
 }
 
 html {
-	font-family: "Gabarito";
+  font-family: "Gabarito";
 }
 
 @theme {
-	--font-sans: "Gabarito";
+  --font-sans: "Gabarito";
 
-	--color-purrple: hsl(220, 100%, 17%);
-	--color-fall: hsl(210, 17%, 98%);
-	--color-purple: hsl(243, 100%, 68%);
-	--color-gren: hsl(160, 84%, 34%);
-	--color-gray: hsl(0, 0%, 97%);
+  --color-purrple: hsl(220, 100%, 17%);
+  --color-fall: hsl(210, 17%, 98%);
+  --color-purple: hsl(243, 100%, 68%);
+  --color-gren: hsl(160, 84%, 34%);
+  --color-gray: hsl(0, 0%, 97%);
 
-	--font-getar: "Getar", serif;
-	--font-optika: "Optika", serif;
-	--font-outfit: "Outfit", sans-serif;
+  --font-getar: "Getar", serif;
+  --font-optika: "Optika", serif;
+  --font-outfit: "Outfit", sans-serif;
 
-	--breakpoint-phone: 0px;
-	--breakpoint-tablet: 768px;
-	--breakpoint-desktop: 1024px;
-	--breakpoint-ultrawide: 1920px;
+  --breakpoint-phone: 0px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+  --breakpoint-ultrawide: 1920px;
+
+  --shadow-med: 5px 5px 20px 1px rgba(0, 0, 0, 0.3);
 }
