@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3 class="font-bold">User Detaills</h3>
-    <div class="flex">
+    <div class="flex border border-gray-200 m-4 rounded-md pl-8 py-4 shadow-xl">
       <div class="grow-1">
         <div class="flex">
           <span class="pr-16">Username:</span>
@@ -14,8 +14,8 @@
       </div>
       <div class="grow-1">
         <div class="flex">
-          <span class="pr-16">Referrer:</span>
-          <span>{{ referredBy.data.value.username }}</span>
+          <span class="pr-25">Referrer:</span>
+          <span>{{ referredBy }}</span>
         </div>
         <div class="flex">
           <span class="pr-16">Date Created:</span>
@@ -27,11 +27,11 @@
 
   <h2 class="text-2xl mt-16">List of referrals</h2>
   <ul>
-    <li>ID</li>
+    <!-- <li>ID</li>
     <li>Username</li>
     <li>Email</li>
     <li>Date</li>
-    <li>Referrer</li>
+    <li>Referrer</li> -->
   </ul>
 
   <UTable :data="referees"></UTable>
@@ -43,27 +43,34 @@ definePageMeta({
 });
 
 const param = useRouteParam("referrer");
-
 const { data: referrer } = await useFetch(
   `/api/referrals/referees/${param.value}`
 );
 
-// const referrerUsername = await getMatterMostUserByEmail(referrer.value.email);
-
-const referrerObj = await useFetch("/api/mattermost/Users/getUsername", {
+const referrerMMObj = await useFetch("/api/mattermost/Users/getByEmail", {
   method: "POST",
   body: JSON.stringify({ email: referrer.value.email }),
 });
 
-const referredBy = await useFetch("/api/mattermost/Users/getById", {
-  method: "POST",
-  body: JSON.stringify({ id: referrer.value.referrer }),
-});
+const { data: referrersReferrerMM } = await useFetch(
+  "/api/mattermost/Users/getById",
+  {
+    method: "POST",
+    body: JSON.stringify({ id: referrer.value?.referrer }),
+  }
+);
 
-const referrerUsername = referrerObj.data.value?.username || "";
+const referredBy = referrersReferrerMM.value?.username;
 
-const { data: referees } = await useFetch(`/api/referrals/referees/list`, {
-  method: "POST",
-  body: JSON.stringify({ id: param.value }),
-});
+const referrerUsername = referrerMMObj.data.value?.username || "";
+
+const { data: referees } = await useFetch(
+  `/api/referrals/referrers/referees-list`,
+  {
+    method: "POST",
+    body: JSON.stringify({ id: referrerMMObj.data.value.id }),
+  }
+);
+console.log(referrerMMObj.data.value);
+console.log(referrer.value?.referrer);
 </script>

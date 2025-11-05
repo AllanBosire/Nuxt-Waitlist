@@ -55,6 +55,7 @@ export default defineEventHandler(async () => {
   // const admins = await settle(adminEmails.map((email) => getMatterMostUserByEmail(email)));
   inviteBot.getWebSocket().on("posted", async (data) => {
     const { message, user_id } = tryParse<Post>(data.post);
+    console.log(message);
     if (user_id === BOT_ID) {
       return;
     }

@@ -1,0 +1,17 @@
+{
+  "name": "Node.js Dev Container",
+  "image": "nodejs/devcontainer:nightly",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/developer/nodejs/node,type=bind,consistency=cached",
+  "workspaceFolder": "/home/developer/nodejs/node",
+  "remoteUser": "developer",
+  "mounts": [
+    "source=build-cache,target=/home/developer/nodejs/node/out,type=volume"
+  ],
+  "postCreateCommand": "sudo chown -R developer:developer /home/developer/nodejs && pnpm i -f",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/pnpm": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker": {}
+  }
+}

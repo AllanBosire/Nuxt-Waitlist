@@ -135,7 +135,7 @@ export async function getMatterMostUserByUsername(username: string) {
   }
 
   const config = useRuntimeConfig();
-  const results = await $fetch<MMUser[]>(
+  const results = await $fetch<MMUser>(
     joinURL(config.public.mmUrl, `/api/v4/users/username/${username}`),
     {
       method: "GET",
@@ -144,6 +144,7 @@ export async function getMatterMostUserByUsername(username: string) {
       },
     }
   ).catch((e) => {
+    console.log(e);
     if (e?.response?.status === 404) {
       return undefined;
     }

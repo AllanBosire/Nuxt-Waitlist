@@ -6,10 +6,10 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const referrerMMId = body.id as string;
 
-  const referrers = await db
-    .select({ email: waitlist.email })
+  const referees = await db
+    .select({ email: waitlist.email, inviteDate: waitlist.createdAt })
     .from(waitlist)
     .where(eq(waitlist.referrer, referrerMMId));
 
-  return referrers;
+  return referees;
 });

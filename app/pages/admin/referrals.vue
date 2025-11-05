@@ -8,6 +8,10 @@ import type {
 
 import * as z from "zod";
 import type { Reactive } from "vue";
+const UDropdownMenu = resolveComponent("UDropdownMenu");
+const UButton = resolveComponent("UButton");
+import type { Row } from "@tanstack/vue-table";
+import { toast } from "#build/ui";
 definePageMeta({
   middleware: "admin",
   layout: "admin",
@@ -30,7 +34,7 @@ type DefaultReferrer = {
   referrer: string;
 };
 
-const unclaimedInvitesColumns: TableColumn<UnclaimedInvite>[] = [
+const unclaimedInvitesColumns: TableColumn<string>[] = [
   {
     accessorKey: "email",
     header: "Email",
@@ -39,9 +43,8 @@ const unclaimedInvitesColumns: TableColumn<UnclaimedInvite>[] = [
     accessorKey: "invite_sendout_time",
     header: "Invite Date Sent",
     cell: ({ row }) => {
-      // const date = new Date(row.getValue<string>("invite_sendout_time"));
-      // return `${date.toLocaleDateString()}`;
-      const date = row.getValue<string>("invite_sendout_time");
+      const date = new Date(row.getValue<string>("invite_sendout_time"));
+      return `${date.toLocaleDateString()}`;
     },
   },
   {
@@ -49,19 +52,143 @@ const unclaimedInvitesColumns: TableColumn<UnclaimedInvite>[] = [
     header: "Referrer",
   },
 ];
-const unclaimedInvites = await useFetch("/api/referrals/invites");
+
+const monthStrings = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+const waitlistUsersListColumn: TableColumn<DefaultReferrer>[] = [
+  {
+    accessorKey: "id",
+    header: "ID",
+  },
+  {
+    accessorKey: "username",
+    header: "Username",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Date",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue<string>("createdAt"));
+      // const options: Partial<Intl.DateTimeFormatOptions> = { month: "long" };
+
+      // const month = date.toLocaleString("en-US", options);
+
+      const month = monthStrings[date.getMonth()];
+      const day = date.getDate();
+      const hour = date.getHours();
+      const minute = date.getMinutes();
+      const formattedDate = `${month} ${day
+        .toString()
+        .padStart(2, "0")}, ${hour}:${minute}`;
+
+      return formattedDate;
+    },
+  },
+
+  {
+    accessorKey: "referrer",
+    header: "Referrer",
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      return h(
+        UDropdownMenu,
+        { items: getRowItems(row), content: { align: "end" } },
+        h(UButton, {
+          icon: "i-lucide-ellipsis-vertical",
+        })
+      );
+    },
+  },
+];
+
+function getRowItems(row: Row<DefaultReferrer>) {
+  return [
+    {
+      label: "Copy Referrer Username",
+      onSelect() {
+        console.log(row.original.referrer);
+      },
+    },
+  ];
+}
+
 const router = useRouter();
-function onSelect(row: TableRow<TopReferrer>, e: Event) {
-  router.push(`/admin/${row.getValue("id")}`);
+async function onSelect(row: TableRow<TopReferrer>, e: Event) {
+  if (filterState.referrer === "Top Referrers") {
+    // const response = await $fetch("api/ma");
+    console.log(row.original.referrer);
+    const mmUser = await $fetch("/api/mattermost/Users/getByUsername", {
+      method: "POST",
+      body: JSON.stringify({
+        username: row.original.referrer,
+      }),
+    });
+    if (!mmUser) {
+      return;
+    }
+    const email = mmUser.email;
+    const user = await $fetch("/api/referrals/referrers/getByEmail", {
+      method: "POST",
+      body: JSON.stringify({
+        email,
+      }),
+    });
+    console.log(`/admin/${user.id}`);
+    navigateTo(`/admin/${user.id}`);
+    return;
+  }
+  navigateTo(`/admin/${row.getValue("id")}`);
 }
 
 const popOverOpen = ref(false);
-const referrerKey: Ref<"Default" | "Top Referrers"> = ref("Default");
-let previousSubmission: FilterState | undefined = undefined;
-const referrers = await useFetch("/api/referrals/referees");
-if (!referrers.error.value) {
-  previousSubmission = { referrer: "Default" };
-}
+
+type FilterSchemaType = z.infer<typeof schema>;
+
+type FilterState = {
+  referrer: (typeof referrerOptions)[number];
+  page: number;
+  pageQuantity: number;
+};
+const filterState = reactive<FilterState>({
+  referrer: "Default",
+  page: 1,
+  pageQuantity: 1,
+});
+
+const url = ref<string>(
+  filterState.referrer === "Top Referrers"
+    ? "/api/referrals/referrers/top-referrers"
+    : "/api/referrals/referees"
+);
+
+const waitlistUsers = await useFetch(
+  url.value + `?page=${filterState.page}&items=${filterState.pageQuantity}`
+);
+
+const itemCount = await useFetch("/api/count");
+
+// if (!referrers.error.value) {
+//   previousSubmission = { referrer: "Default" };
+// }
 const referrerOptions = ["Default", "Top Referrers"] as const;
 const formSelects: {
   referrerOptions: typeof referrerOptions;
@@ -72,39 +199,76 @@ const schema = z.object({
   referrer: z.enum(formSelects.referrerOptions),
 });
 
-type FilterSchemaType = z.infer<typeof schema>;
-
-type FilterState = {
-  referrer: (typeof referrerOptions)[number];
-};
-const filterState: FilterState = reactive({
-  referrer: "Default",
-});
-
 function resetFilters() {
   filterState.referrer = "Default";
   popOverOpen.value = false;
 }
 
 async function formSubmit(event: FormSubmitEvent<FilterSchemaType>) {
-  if (JSON.stringify(previousSubmission) === JSON.stringify(filterState)) {
-    console.log(`up to date ${event.data.referrer}`);
-    return;
-  }
-
-  console.log(`getting new data for ${filterState.referrer}`);
-
-  previousSubmission = Object.assign(previousSubmission!, filterState);
   const url =
     filterState.referrer === "Top Referrers"
       ? "/api/referrals/referrers/top-referrers"
       : "/api/referrals/referees";
-
   const response = await $fetch(url);
+  waitlistUsers.data.value = response;
 
-  referrers.data.value = response;
+  // if (JSON.stringify(previousSubmission) === JSON.stringify(filterState)) {
+  //   console.log(`up to date ${event.data.referrer}`);
+  //   return;
+  // }
+
+  // console.log(`getting new data for ${filterState.referrer}`);
+
+  // previousSubmission = Object.assign(previousSubmission!, filterState);
+  // const url =
+  //   filterState.referrer === "Top Referrers"
+  //     ? "/api/referrals/referrers/top-referrers"
+  //     : "/api/referrals/referees";
+
+  // const response = await $fetch(url);
+
+  // referrers.data.value = response;
 
   popOverOpen.value = false;
+}
+
+async function refereesPageChange(newPageNumber: number) {
+  const url =
+    filterState.referrer === "Top Referrers"
+      ? "/api/referrals/referrers/top-referrers"
+      : "/api/referrals/referees";
+  refereesPaginationDisabled.value = true;
+  const response = await $fetch(
+    url + `?page=${newPageNumber}&items=${filterState.pageQuantity}`
+  );
+  waitlistUsers.data.value = response;
+
+  refereesPaginationDisabled.value = false;
+  filterState.page = newPageNumber;
+}
+
+const refereesPaginationDisabled = ref(false);
+const unclaimedInvitesTotal = await useFetch("/api/referrals/invites/count");
+const unclaimedInvitesState = reactive({
+  page: 1,
+  pageQuantity: 1,
+  disabled: false,
+  total: unclaimedInvitesTotal.data.value?.count,
+});
+const unclaimedInvites = await useFetch(
+  `/api/referrals/invites?page=${unclaimedInvitesState.page}&items=${unclaimedInvitesState.pageQuantity}`
+);
+console.log("//// " + unclaimedInvites.data.value);
+async function unclaimedInvitePageChange(newPageNumber: number) {
+  const url = "/api/referrals/invites";
+  unclaimedInvitesState.disabled = true;
+  const response = await $fetch(
+    url + `?page=${newPageNumber}&items=${unclaimedInvitesState.pageQuantity}`
+  );
+  unclaimedInvites.data.value = response;
+  unclaimedInvitesState.page = newPageNumber;
+
+  unclaimedInvitesState.disabled = false;
 }
 </script>
 
@@ -160,18 +324,44 @@ async function formSubmit(event: FormSubmitEvent<FilterSchemaType>) {
         </UPopover>
       </div>
       <UTable
-        :data="referrers.data.value"
+        :columns="waitlistUsersListColumn"
+        :data="waitlistUsers.data.value"
         @select="onSelect"
-        class="border border-gray-400 overflow-hidden mt-0 mb-0 border-t-0 border-b-0"
+        class="border border-gray-400 overflow-hidden mt-0 mb-0 border-t-0 border-b-0 hover:cursor-pointer"
       ></UTable>
-      <div class="border border-gray-400 h-16 rounded-b-[10px]"></div>
+      <div
+        class="border border-gray-400 h-16 rounded-b-[10px] flex justify-end pt-4 pr-2"
+      >
+        <UPagination
+          :total="itemCount.data.value?.count"
+          :sibling-count="1"
+          :page="filterState.page"
+          :items-per-page="filterState.pageQuantity"
+          @update:page="refereesPageChange"
+          :disabled="refereesPaginationDisabled"
+        />
+      </div>
 
       <h2 class="text-xl">Unclaimed Invites</h2>
-      <UTable
-        :data="unclaimedInvites.data.value"
-        :columns="unclaimedInvitesColumns"
-        class="border border-gray-400 rounded-md"
-      ></UTable>
+      <div>
+        <UTable
+          :data="unclaimedInvites.data.value"
+          :columns="unclaimedInvitesColumns"
+          class="border border-gray-400 rounded-t-md hover:cursor-pointer"
+        ></UTable>
+        <div
+          class="border border-gray-400 h-16 rounded-b-[10px] flex justify-end pt-4 pr-2 border-t-0"
+        >
+          <UPagination
+            :total="unclaimedInvitesState.total"
+            :sibling-count="1"
+            :page="unclaimedInvitesState.page"
+            :items-per-page="unclaimedInvitesState.pageQuantity"
+            @update:page="unclaimedInvitePageChange"
+            :disabled="unclaimedInvitesState.disabled"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
