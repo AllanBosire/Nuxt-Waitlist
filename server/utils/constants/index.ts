@@ -1,1 +1,1 @@
-export const ExcludedDomains = ['ifkafin.com', 'localhost'];
+export const ExcludedDomains = ["ifkafin.com", "localhost"];

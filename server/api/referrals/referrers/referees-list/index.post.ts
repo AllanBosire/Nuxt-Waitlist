@@ -1,8 +1,10 @@
-import { isNotNull } from "drizzle-orm";
 import { waitlist } from "~~/server/database/schema";
-import paginationSchema from "../../../utils/schemas";
+import paginationSchema from "../../../../utils/schemas";
 export default defineEventHandler(async (event) => {
   const db = useDrizzle();
+  const body = await readBody(event);
+  const referrerMMId = body.referrer as string;
+
   const { page, items } = await getValidatedQuery(
     event,
     paginationSchema.parse
@@ -16,7 +18,7 @@ export default defineEventHandler(async (event) => {
       referrer: waitlist.referrer,
     })
     .from(waitlist)
-    .where(isNotNull(waitlist.referrer))
+    .where(eq(waitlist.referrer, referrerMMId))
     .limit(items)
     .offset((page - 1) * items);
 

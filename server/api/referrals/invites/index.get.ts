@@ -1,15 +1,15 @@
 import { isNotNull, isNull } from "drizzle-orm";
 import { invites } from "~~/server/database/schema";
-
+import paginationSchema from "../../../utils/schemas";
 export default defineEventHandler(async (event) => {
   const db = useDrizzle();
 
-  const query = getQuery(event);
+  const { page, items } = await getValidatedQuery(
+    event,
+    paginationSchema.parse
+  );
 
-  const page = Number(query.page || 1);
-  const pageSize = Number(query.items || 1);
-
-  const unclaimedInvites = await db
+  const unclaimedInvitesDb = await db
     .select({
       email: invites.for_email,
       invite_sendout_time: invites.created_at,
@@ -22,8 +22,19 @@ export default defineEventHandler(async (event) => {
         isNotNull(invites.for_email)
       )
     )
-    .limit(pageSize)
-    .offset((page - 1) * pageSize);
+    .limit(items)
+    .offset((page - 1) * items);
+
+  const unclaimedInvites = Promise.all(
+    unclaimedInvitesDb.map(async (unclaimedInvite) => {
+      const referrer = await getMatterMostUserById(unclaimedInvite.referrer);
+
+      return {
+        ...unclaimedInvite,
+        referrer: referrer?.username || "",
+      };
+    })
+  );
 
   return unclaimedInvites;
 });

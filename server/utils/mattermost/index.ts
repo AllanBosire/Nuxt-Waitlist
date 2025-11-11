@@ -89,45 +89,49 @@ export interface Timezone {
   manualTimezone: string;
   automaticTimezone: string;
 }
-
-export function getMatterMostUserById(id: string) {
-  const config = useRuntimeConfig();
-  return $fetch<MMUser[]>(joinURL(config.public.mmUrl, "/api/v4/users/ids"), {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${config.mattermost.token}`,
-      "Content-Type": "application/json",
-    },
-    body: [id],
-  })
-    .then((data) => {
-      return data?.[0];
-    })
-    .catch((e) => {
-      consola.fatal(e);
-      return undefined;
-    });
-}
-
-export function getMatterMostUserByEmail(email: string) {
-  const config = useRuntimeConfig();
-
-  return $fetch<MMUser>(
-    joinURL(
-      config.public.mmUrl,
-      `/api/v4/users/email/${encodeURIComponent(email)}`
-    ),
-    {
-      method: "GET",
+export const getMatterMostUserById = defineCachedFunction(
+  (id: string) => {
+    const config = useRuntimeConfig();
+    return $fetch<MMUser[]>(joinURL(config.public.mmUrl, "/api/v4/users/ids"), {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${config.mattermost.token}`,
         "Content-Type": "application/json",
       },
-    }
-  ).catch((e) => {
-    return undefined;
-  });
-}
+      body: [id],
+    })
+      .then((data) => {
+        return data?.[0];
+      })
+      .catch((e) => {
+        consola.fatal(e);
+        return undefined;
+      });
+  },
+  { maxAge: 120 }
+);
+
+export const getMatterMostUserByEmail = defineCachedFunction(
+  (email: string) => {
+    const config = useRuntimeConfig();
+
+    return $fetch<MMUser>(
+      joinURL(
+        config.public.mmUrl,
+        `/api/v4/users/email/${encodeURIComponent(email)}`
+      ),
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${config.mattermost.token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    ).catch((e) => {
+      return undefined;
+    });
+  }
+);
 
 export async function getMatterMostUserByUsername(username: string) {
   if (!username) {

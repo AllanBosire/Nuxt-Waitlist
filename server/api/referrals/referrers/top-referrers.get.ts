@@ -19,22 +19,15 @@ export default defineEventHandler(async (event) => {
     .limit(pageSize)
     .offset((page - 1) * pageSize);
 
-  const usernames = new Map();
   const referrers = await Promise.all(
     referrersDb.map(async (referrer) => {
       let mmUser: MMUser | undefined;
-      let username: string;
-      if (!usernames.has(referrer.referrer)) {
-        mmUser = await getMatterMostUserById(referrer.referrer!);
-        usernames.set(referrer.referrer, mmUser?.username);
-        username = mmUser?.username || "";
-      } else {
-        usernames.get(referrer.referrer);
-        username = mmUser?.username || "";
-      }
+
+      mmUser = await getMatterMostUserById(referrer.referrer!);
+
       return {
         ...referrer,
-        referrer: username,
+        referrer: mmUser?.username || "",
       };
     })
   );
