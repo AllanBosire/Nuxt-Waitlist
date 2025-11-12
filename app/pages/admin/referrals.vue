@@ -6,6 +6,7 @@ const UButton = resolveComponent("UButton");
 import type { Row } from "@tanstack/vue-table";
 import { useClipboard } from "@vueuse/core";
 import DataTable from "~/components/Admin/DataTable.vue";
+// import {UDropdownMenu, UButton } from "#components";
 
 definePageMeta({
   middleware: "admin",
@@ -18,6 +19,7 @@ type UnclaimedInvite = {
   email: string | null;
   invite_sendout_time: string | null;
   referrer: string;
+  id?: number;
 };
 
 type Referrer = {
@@ -116,7 +118,7 @@ async function onSelect(row: TableRow<Referrer>, e: Event | undefined) {
       <span class="phone:hidden tablet:block"> Referrals </span>
     </div>
 
-    <div class="flex flex-col space-y-4 bg-white rounded-xl p-4 shadow-med">
+    <div class="flex flex-col space-y-4 bg-white rounded-xl p-4">
       <span class="text-[#001C55] font-[Outfit] text-xl leading-7"
         >List of Referrals</span
       >

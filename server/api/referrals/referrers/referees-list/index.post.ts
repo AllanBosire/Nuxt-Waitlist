@@ -1,5 +1,5 @@
 import { waitlist } from "~~/server/database/schema";
-import paginationSchema from "../../../../utils/schemas";
+import { paginationSchema } from "../../../../utils/schemas";
 export default defineEventHandler(async (event) => {
   const db = useDrizzle();
   const body = await readBody(event);
@@ -22,20 +22,43 @@ export default defineEventHandler(async (event) => {
     .limit(items)
     .offset((page - 1) * items);
 
-  const referees = await Promise.all(
-    refereesDb.map(async (referee) => {
-      const mmUser = await getMatterMostUserById(referee.referrer!);
-      const referrerUsername = mmUser?.username || "";
+  type Referee = (typeof refereesDb)[number];
+  const referees = new Map<string, Referee[]>();
+  refereesDb.forEach((referee) => {
+    if (!referee.referrer) {
+      return;
+    }
 
-      const mmRefereeUser = await getMatterMostUserByEmail(referee.email);
+    let _referees = referees.get(referee.referrer);
+    if (!_referees) {
+      _referees = [];
+      referees.set(referee.referrer, _referees);
+    }
 
-      return {
-        ...referee,
-        referrer: referrerUsername,
-        username: mmRefereeUser?.username || "",
-      };
-    })
-  );
+    _referees.push(referee);
+  });
 
-  return referees;
+  const ids = toArray(referees.keys());
+  const referrers = (await getMatterMostUserById(ids)) || [];
+
+  const arr: Array<
+    Prettify<
+      Omit<Referee, "referrer"> & {
+        username: string;
+        referrer: string;
+      }
+    >
+  > = [];
+  referrers.forEach((referrer) => {
+    const _referees = referees.get(referrer.id);
+    _referees?.forEach((r) => {
+      arr.push({
+        ...r,
+        referrer: referrer.username,
+        username: r.email.split("@")[0],
+      });
+    });
+  });
+
+  return arr;
 });

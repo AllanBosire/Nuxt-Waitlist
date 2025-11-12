@@ -83,8 +83,7 @@ const { data: referrerParentMM } = await useFetch(
     body: JSON.stringify({ id: referrer.value?.referrer }),
   }
 );
-
-const referredBy = referrerParentMM.value?.username;
+const referredBy = referrerParentMM.value?.at(0)?.username;
 
 const referrerUsername = referrerMMObj.data.value?.username || "";
 

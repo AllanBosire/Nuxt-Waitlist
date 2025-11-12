@@ -211,6 +211,4 @@ html {
   --breakpoint-tablet: 768px;
   --breakpoint-desktop: 1024px;
   --breakpoint-ultrawide: 1920px;
-
-  --shadow-med: 5px 5px 20px 1px rgba(0, 0, 0, 0.3);
 }

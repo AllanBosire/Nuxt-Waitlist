@@ -1,6 +1,6 @@
 import z from "zod";
 
-export default z.object({
+export const paginationSchema = z.object({
   page: z.string().transform((val) => {
     const num = Number(val);
     if (Number.isNaN(num)) return 1;

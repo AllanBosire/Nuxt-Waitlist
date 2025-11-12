@@ -90,7 +90,7 @@ export interface Timezone {
   automaticTimezone: string;
 }
 export const getMatterMostUserById = defineCachedFunction(
-  (id: string) => {
+  (id: string | string[]) => {
     const config = useRuntimeConfig();
     return $fetch<MMUser[]>(joinURL(config.public.mmUrl, "/api/v4/users/ids"), {
       method: "POST",
@@ -98,17 +98,13 @@ export const getMatterMostUserById = defineCachedFunction(
         Authorization: `Bearer ${config.mattermost.token}`,
         "Content-Type": "application/json",
       },
-      body: [id],
-    })
-      .then((data) => {
-        return data?.[0];
-      })
-      .catch((e) => {
-        consola.fatal(e);
-        return undefined;
-      });
+      body: typeof id === "string" ? [id] : [...id],
+    }).catch((e) => {
+      consola.fatal(e);
+      return undefined;
+    });
   },
-  { maxAge: 120 }
+  { maxAge: 30 * 60 }
 );
 
 export const getMatterMostUserByEmail = defineCachedFunction(
@@ -130,7 +126,8 @@ export const getMatterMostUserByEmail = defineCachedFunction(
     ).catch((e) => {
       return undefined;
     });
-  }
+  },
+  { maxAge: 30 * 60 }
 );
 
 export async function getMatterMostUserByUsername(username: string) {

@@ -19,18 +19,53 @@ export default defineEventHandler(async (event) => {
     .limit(pageSize)
     .offset((page - 1) * pageSize);
 
-  const referrers = await Promise.all(
-    referrersDb.map(async (referrer) => {
-      let mmUser: MMUser | undefined;
+  // const referrers = await Promise.all(
+  //   referrersDb.map(async (referrer) => {
+  //     let mmUser: MMUser | undefined;
 
-      mmUser = await getMatterMostUserById(referrer.referrer!);
+  //     mmUser = await getMatterMostUserById(referrer.referrer!);
 
-      return {
-        ...referrer,
-        referrer: mmUser?.username || "",
-      };
-    })
-  );
+  //     return {
+  //       ...referrer,
+  //       referrer: mmUser?.username || "",
+  //     };
+  //   })
+  // );
 
-  return referrers;
+  // return referrers;
+  type Referee = (typeof referrersDb)[number];
+  const referees = new Map<string, Referee[]>();
+  referrersDb.forEach((referee) => {
+    if (!referee.referrer) {
+      return;
+    }
+
+    let _referees = referees.get(referee.referrer);
+    if (!_referees) {
+      _referees = [];
+      referees.set(referee.referrer, _referees);
+    }
+
+    _referees.push(referee);
+  });
+
+  const ids = toArray(referees.keys());
+  const referrers = (await getMatterMostUserById(ids)) || [];
+  const arr: Array<
+    Prettify<
+      Omit<Referee, "referrer"> & {
+        referrer: string;
+      }
+    >
+  > = [];
+  referrers.forEach((referrer) => {
+    const _referees = referees.get(referrer.id);
+    _referees?.forEach((r) => {
+      arr.push({
+        ...r,
+        referrer: referrer.username,
+      });
+    });
+  });
+  return arr;
 });

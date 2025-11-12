@@ -1,6 +1,6 @@
 import { isNotNull, isNull } from "drizzle-orm";
 import { invites } from "~~/server/database/schema";
-import paginationSchema from "../../../utils/schemas";
+import { paginationSchema } from "../../../utils/schemas";
 export default defineEventHandler(async (event) => {
   const db = useDrizzle();
 
@@ -25,16 +25,50 @@ export default defineEventHandler(async (event) => {
     .limit(items)
     .offset((page - 1) * items);
 
-  const unclaimedInvites = Promise.all(
-    unclaimedInvitesDb.map(async (unclaimedInvite) => {
-      const referrer = await getMatterMostUserById(unclaimedInvite.referrer);
+  // const unclaimedInvites = Promise.all(
+  //   unclaimedInvitesDb.map(async (unclaimedInvite) => {
+  //     const referrer = await getMatterMostUserById(unclaimedInvite.referrer);
 
-      return {
-        ...unclaimedInvite,
-        referrer: referrer?.username || "",
-      };
-    })
-  );
+  //     return {
+  //       ...unclaimedInvite,
+  //       referrer: referrer?.username || "",
+  //     };
+  //   })
+  // );
+  type UnclaimedInvite = (typeof unclaimedInvitesDb)[number];
+  const referees = new Map<string, UnclaimedInvite[]>();
+  unclaimedInvitesDb.forEach((referee) => {
+    if (!referee.referrer) {
+      return;
+    }
 
-  return unclaimedInvites;
+    let _referees = referees.get(referee.referrer);
+    if (!_referees) {
+      _referees = [];
+      referees.set(referee.referrer, _referees);
+    }
+
+    _referees.push(referee);
+  });
+  const ids = toArray(referees.keys());
+  const referrers = (await getMatterMostUserById(ids)) || [];
+
+  const arr: Array<
+    Prettify<
+      Omit<UnclaimedInvite, "referrer"> & {
+        referrer: string;
+      }
+    >
+  > = [];
+  referrers.forEach((referrer) => {
+    const _referees = referees.get(referrer.id);
+    _referees?.forEach((r) => {
+      arr.push({
+        ...r,
+        referrer: referrer.username,
+      });
+    });
+  });
+
+  return arr;
 });

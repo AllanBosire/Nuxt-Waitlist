@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="TData extends object">
+<script setup lang="ts" generic="TData extends {id?: number}">
 import type { TableColumn, TableRow } from "@nuxt/ui";
 
 const props = defineProps<{
@@ -45,7 +45,7 @@ const { data: localData, pending: paginationDisabled } = await useFetch<
 <template>
   <ClientOnly>
     <UTable
-      :data="localData"
+      :data="localData?.sort((a, b) => (a.id && b.id ? a.id - b.id : 0))"
       :columns="props.columns"
       :class="`${tableClass}`"
       :onSelect="onSelect"
