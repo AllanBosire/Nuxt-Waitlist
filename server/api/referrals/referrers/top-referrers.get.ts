@@ -19,20 +19,6 @@ export default defineEventHandler(async (event) => {
     .limit(pageSize)
     .offset((page - 1) * pageSize);
 
-  // const referrers = await Promise.all(
-  //   referrersDb.map(async (referrer) => {
-  //     let mmUser: MMUser | undefined;
-
-  //     mmUser = await getMatterMostUserById(referrer.referrer!);
-
-  //     return {
-  //       ...referrer,
-  //       referrer: mmUser?.username || "",
-  //     };
-  //   })
-  // );
-
-  // return referrers;
   type Referee = (typeof referrersDb)[number];
   const referees = new Map<string, Referee[]>();
   referrersDb.forEach((referee) => {

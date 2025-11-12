@@ -24,17 +24,6 @@ export default defineEventHandler(async (event) => {
     )
     .limit(items)
     .offset((page - 1) * items);
-
-  // const unclaimedInvites = Promise.all(
-  //   unclaimedInvitesDb.map(async (unclaimedInvite) => {
-  //     const referrer = await getMatterMostUserById(unclaimedInvite.referrer);
-
-  //     return {
-  //       ...unclaimedInvite,
-  //       referrer: referrer?.username || "",
-  //     };
-  //   })
-  // );
   type UnclaimedInvite = (typeof unclaimedInvitesDb)[number];
   const referees = new Map<string, UnclaimedInvite[]>();
   unclaimedInvitesDb.forEach((referee) => {

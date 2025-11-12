@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import type { TableColumn, TableRow } from "@nuxt/ui";
 
-const UDropdownMenu = resolveComponent("UDropdownMenu");
-const UButton = resolveComponent("UButton");
 import type { Row } from "@tanstack/vue-table";
 import { useClipboard } from "@vueuse/core";
 import DataTable from "~/components/Admin/DataTable.vue";
-// import {UDropdownMenu, UButton } from "#components";
+import { UDropdownMenu, UButton } from "#components";
 
 definePageMeta({
   middleware: "admin",
@@ -79,7 +77,7 @@ const waitlistUsersListColumn: TableColumn<Referrer>[] = [
     id: "actions",
     cell: ({ row }) => {
       return h(
-        UDropdownMenu,
+        UDropdownMenu as Component,
         { items: getRowItems(row), content: { align: "end" } },
         {
           default: () =>
