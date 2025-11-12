@@ -7,9 +7,9 @@ const emailRegex =
 export default defineEventHandler(async () => {
   const db = useDrizzle();
   const { version } = useRuntimeConfig().mattermost.bots.invite;
-  // if (import.meta.dev) {
-  //     return;
-  // }
+  if (import.meta.dev) {
+    return;
+  }
   const needLinks = await db.query.waitlist.findMany({
     where(fields, { sql, or, isNull, eq }) {
       return or(
