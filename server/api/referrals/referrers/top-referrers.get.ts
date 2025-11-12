@@ -1,28 +1,27 @@
-import { isNotNull } from "drizzle-orm";
+import { count, isNotNull, desc } from "drizzle-orm";
 import { waitlist } from "~~/server/database/schema";
-import { paginationSchema } from "../../../utils/schemas";
+
 export default defineEventHandler(async (event) => {
   const db = useDrizzle();
-  const { page, items } = await getValidatedQuery(
-    event,
-    paginationSchema.parse
-  );
-
-  const refereesResult = await db
+  const query = getQuery(event);
+  const page = Number(query.page || 1);
+  const pageSize = Number(query.items || 10);
+  const totalCount = count(waitlist.email);
+  const referrersDb = await db
     .select({
-      id: waitlist.id,
-      email: waitlist.email,
-      createdAt: waitlist.createdAt,
       referrer: waitlist.referrer,
+      referrals: totalCount,
     })
     .from(waitlist)
     .where(isNotNull(waitlist.referrer))
-    .limit(items)
-    .offset((page - 1) * items);
+    .groupBy(waitlist.referrer)
+    .orderBy(desc(totalCount))
+    .limit(pageSize)
+    .offset((page - 1) * pageSize);
 
-  type Referee = (typeof refereesResult)[number];
+  type Referee = (typeof referrersDb)[number];
   const referees = new Map<string, Referee[]>();
-  refereesResult.forEach((referee) => {
+  referrersDb.forEach((referee) => {
     if (!referee.referrer) {
       return;
     }
@@ -38,11 +37,9 @@ export default defineEventHandler(async (event) => {
 
   const ids = toArray(referees.keys());
   const referrers = (await getMatterMostUserById(ids)) || [];
-
   const arr: Array<
     Prettify<
       Omit<Referee, "referrer"> & {
-        username: string;
         referrer: string;
       }
     >
@@ -53,10 +50,8 @@ export default defineEventHandler(async (event) => {
       arr.push({
         ...r,
         referrer: referrer.username,
-        username: r.email.split("@")[0],
       });
     });
   });
-
   return arr;
 });

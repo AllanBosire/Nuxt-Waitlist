@@ -1,4 +1,4 @@
-import { waitlist } from '~~/server/database/schema';
+import { waitlist } from "~~/server/database/schema";
 
 export default defineEventHandler(async (event) => {
   const db = useDrizzle();

@@ -1,28 +1,32 @@
-import { isNotNull } from "drizzle-orm";
-import { waitlist } from "~~/server/database/schema";
+import { isNotNull, isNull } from "drizzle-orm";
+import { invites } from "~~/server/database/schema";
 import { paginationSchema } from "../../../utils/schemas";
 export default defineEventHandler(async (event) => {
   const db = useDrizzle();
+
   const { page, items } = await getValidatedQuery(
     event,
     paginationSchema.parse
   );
 
-  const refereesResult = await db
+  const unclaimedInvitesDb = await db
     .select({
-      id: waitlist.id,
-      email: waitlist.email,
-      createdAt: waitlist.createdAt,
-      referrer: waitlist.referrer,
+      email: invites.for_email,
+      invite_sendout_time: invites.created_at,
+      referrer: invites.created_by,
     })
-    .from(waitlist)
-    .where(isNotNull(waitlist.referrer))
+    .from(invites)
+    .where(
+      and(
+        and(eq(invites.is_active, true), isNull(invites.used_by)),
+        isNotNull(invites.for_email)
+      )
+    )
     .limit(items)
     .offset((page - 1) * items);
-
-  type Referee = (typeof refereesResult)[number];
-  const referees = new Map<string, Referee[]>();
-  refereesResult.forEach((referee) => {
+  type UnclaimedInvite = (typeof unclaimedInvitesDb)[number];
+  const referees = new Map<string, UnclaimedInvite[]>();
+  unclaimedInvitesDb.forEach((referee) => {
     if (!referee.referrer) {
       return;
     }
@@ -35,14 +39,12 @@ export default defineEventHandler(async (event) => {
 
     _referees.push(referee);
   });
-
   const ids = toArray(referees.keys());
   const referrers = (await getMatterMostUserById(ids)) || [];
 
   const arr: Array<
     Prettify<
-      Omit<Referee, "referrer"> & {
-        username: string;
+      Omit<UnclaimedInvite, "referrer"> & {
         referrer: string;
       }
     >
@@ -53,7 +55,6 @@ export default defineEventHandler(async (event) => {
       arr.push({
         ...r,
         referrer: referrer.username,
-        username: r.email.split("@")[0],
       });
     });
   });

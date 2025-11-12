@@ -1,6 +1,6 @@
-import { ExcludedDomains } from '~~/server/utils/constants';
-import { waitlist } from '../database/schema';
-import { notLike } from 'drizzle-orm';
+import { ExcludedDomains } from "~~/server/utils/constants";
+import { waitlist } from "../database/schema";
+import { notLike } from "drizzle-orm";
 
 function anonymize(item: { email: string }) {
   const regex =
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
         ...ExcludedDomains.map((d) => notLike(tables.waitlist.email, `%${d}`))
       )
     );
-  const cookie = getCookie(event, 'waitlistEmail');
+  const cookie = getCookie(event, "waitlistEmail");
   const entries = raw.map((entry) => {
     if (entry.email === cookie) {
       return entry.email;
