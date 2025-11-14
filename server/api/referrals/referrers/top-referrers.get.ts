@@ -1,4 +1,4 @@
-import { count, isNotNull, desc } from "drizzle-orm";
+import { count, isNotNull, desc, ConsoleLogWriter } from "drizzle-orm";
 import { waitlist } from "~~/server/database/schema";
 
 export default defineEventHandler(async (event) => {
@@ -7,6 +7,7 @@ export default defineEventHandler(async (event) => {
   const page = Number(query.page || 1);
   const pageSize = Number(query.items || 10);
   const totalCount = count(waitlist.email);
+
   const referrersDb = await db
     .select({
       referrer: waitlist.referrer,
@@ -44,7 +45,20 @@ export default defineEventHandler(async (event) => {
       }
     >
   > = [];
+  let regex = "";
+  const excludedDomainLength = ExcludedDomains.length;
+  ExcludedDomains.forEach((domain, index) => {
+    if (index < excludedDomainLength - 1) {
+      regex += `${domain}|`;
+      return;
+    }
+    regex += `${domain}`;
+  });
+
   referrers.forEach((referrer) => {
+    if (referrer.email.match(regex)) {
+      return;
+    }
     const _referees = referees.get(referrer.id);
     _referees?.forEach((r) => {
       arr.push({
