@@ -26,6 +26,7 @@ type Referrer = {
   email: string;
   createdAt: string | null;
   referrer: string;
+  referrals: number | undefined;
 };
 
 const unclaimedInvitesColumns: TableColumn<UnclaimedInvite>[] = [
@@ -59,6 +60,8 @@ const waitlistUsersListColumn: TableColumn<Referrer>[] = [
   {
     accessorKey: "email",
     header: "Email",
+
+    cellClass: "text-center",
   },
   {
     accessorKey: "createdAt",
@@ -68,7 +71,7 @@ const waitlistUsersListColumn: TableColumn<Referrer>[] = [
       return date.toLocaleString();
     },
   },
-
+  { accessorKey: "referrals", header: "Number of Referrals" },
   {
     accessorKey: "referrer",
     header: "Referrer",
@@ -122,7 +125,7 @@ async function onSelect(row: TableRow<Referrer>, e: Event | undefined) {
       >
       <DataTable
         :columns="waitlistUsersListColumn"
-        table-class="border border-gray-400 overflow-hidden mt-0 mb-0 border-t-1 border-b-0 rounded-t-lg hover:cursor-pointer"
+        table-class="border border-gray-400 overflow-hidden mt-0 mb-0 border-t-1 border-b-0 rounded-t-lg hover:cursor-pointer [&>table>thead>tr>th]:text-center [&>table>tbody>tr>td]:text-center"
         pagination-class="border border-gray-400 h-16 rounded-b-[10px] flex justify-end pt-4 pr-2"
         :items-per-page="10"
         url="/api/referrals/referees"
@@ -134,7 +137,7 @@ async function onSelect(row: TableRow<Referrer>, e: Event | undefined) {
     <div>
       <DataTable
         :columns="unclaimedInvitesColumns"
-        table-class="border border-gray-400 overflow-hidden mt-0 mb-0 border-t-1 border-b-0 rounded-t-lg"
+        table-class="border border-gray-400 overflow-hidden mt-0 mb-0 border-t-1 border-b-0 rounded-t-l"
         pagination-class="border border-gray-400 h-16 rounded-b-[10px] flex justify-end pt-4 pr-2"
         :items-per-page="10"
         url="/api/referrals/invites"

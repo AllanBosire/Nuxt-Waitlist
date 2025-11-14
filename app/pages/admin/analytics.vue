@@ -278,8 +278,8 @@ async function unsubscribeUser(userId: string) {
   });
 }
 
-const { data: topReferrers, error } = useFetch(
-  "/api/referrals/referrers/top-referrers?items={10}"
+const { data: topReferrers, error } = await useFetch(
+  "/api/referrals/referrers/top-referrers?items=20"
 );
 if (!error.value && topReferrers.value?.length && topReferrers.value.length > 0)
   referralData.value = topReferrers.value?.map((topReferrer) => ({
